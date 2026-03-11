@@ -3,7 +3,6 @@ import { authOptions } from "@/lib/auth";
 import { resolveDocPath, getMimeType, DOCUMENTS_ROOT } from "@/lib/documents";
 import { logView } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { head } from "@vercel/blob";
 import fs from "fs";
 import path from "path";
 
@@ -62,16 +61,22 @@ export async function GET(
     return NextResponse.json({ error: "Storage not configured" }, { status: 500 });
   }
 
-  const blobKey = `documents/${relPath}`;
-  let blobMeta: Awaited<ReturnType<typeof head>>;
-  try {
-    blobMeta = await head(blobKey, { token: blobToken });
-  } catch {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  // Derive the store's public base URL from the token.
+  // Token format: vercel_blob_rw_<storeId>_<secret>
+  // Public store hostname: <storeId-lowercase>.public.blob.vercel-storage.com
+  const storeId = blobToken.split("_")[3]?.toLowerCase();
+  if (!storeId) {
+    return NextResponse.json({ error: "Storage misconfigured" }, { status: 500 });
   }
 
-  // Proxy through our server so the URL stays authenticated
-  const blobRes = await fetch(blobMeta.url);
+  // Encode each path segment so spaces / special chars are safe in the URL
+  const encodedPath = relPath.split("/").map(encodeURIComponent).join("/");
+  const blobUrl = `https://${storeId}.public.blob.vercel-storage.com/documents/${encodedPath}`;
+
+  const blobRes = await fetch(blobUrl);
+  if (!blobRes.ok) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const body = await blobRes.arrayBuffer();
 
   return new NextResponse(body, {
