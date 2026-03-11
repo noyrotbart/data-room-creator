@@ -1,0 +1,1185 @@
+[
+  {
+    "name": "Contracts",
+    "path": "Contracts",
+    "type": "folder",
+    "children": [
+      {
+        "name": "Google Deals",
+        "path": "Contracts/Google Deals",
+        "type": "folder",
+        "children": [
+          {
+            "name": "HubX - Nova app",
+            "path": "Contracts/Google Deals/HubX - Nova app",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Google PO 4100676090  Version  00000000.PDF",
+                "path": "Contracts/Google Deals/HubX - Nova app/Google PO 4100676090  Version  00000000.PDF",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Pilot - Churney APS x Google x HubX- LEC.pdf",
+                "path": "Contracts/Google Deals/HubX - Nova app/Pilot - Churney APS x Google x HubX- LEC.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Meta Deals",
+        "path": "Contracts/Meta Deals",
+        "type": "folder",
+        "children": [
+          {
+            "name": "Beijing A ru si di",
+            "path": "Contracts/Meta Deals/Beijing A ru si di",
+            "type": "folder",
+            "children": [
+              {
+                "name": "DPA template.pdf",
+                "path": "Contracts/Meta Deals/Beijing A ru si di/DPA template.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "NDA for churney.docx",
+                "path": "Contracts/Meta Deals/Beijing A ru si di/NDA for churney.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "NDA for churney.pdf",
+                "path": "Contracts/Meta Deals/Beijing A ru si di/NDA for churney.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Boombit",
+            "path": "Contracts/Meta Deals/Boombit",
+            "type": "folder",
+            "children": [
+              {
+                "name": "BoomBit SA mNDA - Churney - signed.pdf",
+                "path": "Contracts/Meta Deals/Boombit/BoomBit SA mNDA - Churney - signed.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Doorloop",
+            "path": "Contracts/Meta Deals/Doorloop",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Door Loop__Churney Order form_updated.docx - 6_8_25, 5_12 PM.pdf",
+                "path": "Contracts/Meta Deals/Doorloop/Door Loop__Churney Order form_updated.docx - 6_8_25, 5_12 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "FuturHealth",
+            "path": "Contracts/Meta Deals/FuturHealth",
+            "type": "folder",
+            "children": [
+              {
+                "name": "NDA - FuturHealth.pdf",
+                "path": "Contracts/Meta Deals/FuturHealth/NDA - FuturHealth.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Headway",
+            "path": "Contracts/Meta Deals/Headway",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Headway Churney Order form Draft.docx",
+                "path": "Contracts/Meta Deals/Headway/Headway Churney Order form Draft.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Headway Companies_Churney Order form_multiple apps.docx",
+                "path": "Contracts/Meta Deals/Headway/Headway Companies_Churney Order form_multiple apps.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Headway_Churney Order form.docx",
+                "path": "Contracts/Meta Deals/Headway/Headway_Churney Order form.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Headway-signed-Order Form – Churney ApS – GTHW App Limited – 9 JUL 2025.pdf",
+                "path": "Contracts/Meta Deals/Headway/Headway-signed-Order Form – Churney ApS – GTHW App Limited – 9 JUL 2025.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Ilyon",
+            "path": "Contracts/Meta Deals/Ilyon",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Ilyon Data Processing Agreement (C2P) for Churney Execution Copy September 26 2024 Signed by Ilyon.pdf",
+                "path": "Contracts/Meta Deals/Ilyon/Ilyon Data Processing Agreement (C2P) for Churney Execution Copy September 26 2024 Signed by Ilyon.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Kamee ",
+            "path": "Contracts/Meta Deals/Kamee ",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Updated on 23_12 - General Order form _Churney_Kamee Inc_signed.pdf - 1_7_26, 1_08 PM.pdf",
+                "path": "Contracts/Meta Deals/Kamee /Updated on 23_12 - General Order form _Churney_Kamee Inc_signed.pdf - 1_7_26, 1_08 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "LPP",
+            "path": "Contracts/Meta Deals/LPP",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Signed_NDA.pdf",
+                "path": "Contracts/Meta Deals/LPP/Signed_NDA.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Meta POs",
+            "path": "Contracts/Meta Deals/Meta POs",
+            "type": "folder",
+            "children": [
+              {
+                "name": "PO_300000002558346_70001040160_0_SGP.pdf",
+                "path": "Contracts/Meta Deals/Meta POs/PO_300000002558346_70001040160_0_SGP.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "PO_300000003011584_70001070804_0_EUROZONE.pdf",
+                "path": "Contracts/Meta Deals/Meta POs/PO_300000003011584_70001070804_0_EUROZONE.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "PO_300000003011584_70001283993_0_EUROZONE.docx",
+                "path": "Contracts/Meta Deals/Meta POs/PO_300000003011584_70001283993_0_EUROZONE.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "PO_300000003011584_70001283993_0_EUROZONE.pdf",
+                "path": "Contracts/Meta Deals/Meta POs/PO_300000003011584_70001283993_0_EUROZONE.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Meta SOW (Statements of Work)",
+            "path": "Contracts/Meta Deals/Meta SOW (Statements of Work)",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Meta APAC SOW.pdf",
+                "path": "Contracts/Meta Deals/Meta SOW (Statements of Work)/Meta APAC SOW.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Meta Europe SOW.docx",
+                "path": "Contracts/Meta Deals/Meta SOW (Statements of Work)/Meta Europe SOW.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Meta Europe SOW.pdf",
+                "path": "Contracts/Meta Deals/Meta SOW (Statements of Work)/Meta Europe SOW.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Meta Poland.pdf",
+                "path": "Contracts/Meta Deals/Meta SOW (Statements of Work)/Meta Poland.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Modivo",
+            "path": "Contracts/Meta Deals/Modivo",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Modivo - Churney NDA.pdf",
+                "path": "Contracts/Meta Deals/Modivo/Modivo - Churney NDA.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "PocketFM",
+            "path": "Contracts/Meta Deals/PocketFM",
+            "type": "folder",
+            "children": [
+              {
+                "name": "DPA_-_PFM_Corp._X_Churney_-_09.12.24.pdf",
+                "path": "Contracts/Meta Deals/PocketFM/DPA_-_PFM_Corp._X_Churney_-_09.12.24.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "NDA - Churney APS X PFM Corp. - Final Copy- 03.12.24.pdf",
+                "path": "Contracts/Meta Deals/PocketFM/NDA - Churney APS X PFM Corp. - Final Copy- 03.12.24.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Pundit",
+            "path": "Contracts/Meta Deals/Pundit",
+            "type": "folder",
+            "children": [
+              {
+                "name": "DPA template & GuruGame (Pundit).pdf",
+                "path": "Contracts/Meta Deals/Pundit/DPA template & GuruGame (Pundit).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "NDA for churney & GuruGame (Pundit).pdf",
+                "path": "Contracts/Meta Deals/Pundit/NDA for churney & GuruGame (Pundit).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "River Game",
+            "path": "Contracts/Meta Deals/River Game",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Churney - River - Contract _ 11.25.pdf",
+                "path": "Contracts/Meta Deals/River Game/Churney - River - Contract _ 11.25.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "River game final.pdf",
+                "path": "Contracts/Meta Deals/River Game/River game final.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Spyke Games",
+            "path": "Contracts/Meta Deals/Spyke Games",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Spyke - Churney Aps Order Form.pdf",
+                "path": "Contracts/Meta Deals/Spyke Games/Spyke - Churney Aps Order Form.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Strawberry",
+            "path": "Contracts/Meta Deals/Strawberry",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Strawberry.pdf",
+                "path": "Contracts/Meta Deals/Strawberry/Strawberry.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Outbound Deals",
+        "path": "Contracts/Outbound Deals",
+        "type": "folder",
+        "children": [
+          {
+            "name": "44pixels",
+            "path": "Contracts/Outbound Deals/44pixels",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Churney _ 44PIXELS _ NDA.pdf",
+                "path": "Contracts/Outbound Deals/44pixels/Churney _ 44PIXELS _ NDA.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "7Apps",
+            "path": "Contracts/Outbound Deals/7Apps",
+            "type": "folder",
+            "children": [
+              {
+                "name": "7Apps.docx",
+                "path": "Contracts/Outbound Deals/7Apps/7Apps.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "7Apps.pdf",
+                "path": "Contracts/Outbound Deals/7Apps/7Apps.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Addendum_7Apps (FaceAI) __ Churney _ Order Form .pdf",
+                "path": "Contracts/Outbound Deals/7Apps/Addendum_7Apps (FaceAI) __ Churney _ Order Form .pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Agency _ Avishai-Alegira",
+            "path": "Contracts/Outbound Deals/Agency _ Avishai-Alegira",
+            "type": "folder",
+            "children": [
+              {
+                "name": "contract_avishai _ alegria agency .pdf",
+                "path": "Contracts/Outbound Deals/Agency _ Avishai-Alegira/contract_avishai _ alegria agency .pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Asana Rebel",
+            "path": "Contracts/Outbound Deals/Asana Rebel",
+            "type": "folder",
+            "children": [
+              {
+                "name": "General Order form _Churney_Asana Rebel_Visual Mind.pdf",
+                "path": "Contracts/Outbound Deals/Asana Rebel/General Order form _Churney_Asana Rebel_Visual Mind.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "NDA_AsanaRebel_Churney (1).pdf - 6_27_25, 4_28 PM.pdf",
+                "path": "Contracts/Outbound Deals/Asana Rebel/NDA_AsanaRebel_Churney (1).pdf - 6_27_25, 4_28 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Order form _Churney & Asana Rebel Filterly  25.06.25.pdf",
+                "path": "Contracts/Outbound Deals/Asana Rebel/Order form _Churney & Asana Rebel Filterly  25.06.25.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Beer52",
+            "path": "Contracts/Outbound Deals/Beer52",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Beer 52.pdf",
+                "path": "Contracts/Outbound Deals/Beer52/Beer 52.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Churned Customers",
+            "path": "Contracts/Outbound Deals/Churned Customers",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Burny",
+                "path": "Contracts/Outbound Deals/Churned Customers/Burny",
+                "type": "folder",
+                "children": [
+                  {
+                    "name": "Burny 1.pdf",
+                    "path": "Contracts/Outbound Deals/Churned Customers/Burny/Burny 1.pdf",
+                    "type": "file",
+                    "ext": ".pdf"
+                  },
+                  {
+                    "name": "Burny Addendum - 11_13_24, 12_50 PM.pdf",
+                    "path": "Contracts/Outbound Deals/Churned Customers/Burny/Burny Addendum - 11_13_24, 12_50 PM.pdf",
+                    "type": "file",
+                    "ext": ".pdf"
+                  }
+                ]
+              },
+              {
+                "name": "KIWI.pdf",
+                "path": "Contracts/Outbound Deals/Churned Customers/KIWI.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Single DK.pdf",
+                "path": "Contracts/Outbound Deals/Churned Customers/Single DK.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Codeway",
+            "path": "Contracts/Outbound Deals/Codeway",
+            "type": "folder",
+            "children": [
+              {
+                "name": "codeway - Ask AI - order form (3).pdf",
+                "path": "Contracts/Outbound Deals/Codeway/codeway - Ask AI - order form (3).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Codeway.pdf",
+                "path": "Contracts/Outbound Deals/Codeway/Codeway.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Retake (cohorts)_ Codeway Games - General (1).pdf",
+                "path": "Contracts/Outbound Deals/Codeway/Retake (cohorts)_ Codeway Games - General (1).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "signed_Addendum Cleanup_06.25.pdf",
+                "path": "Contracts/Outbound Deals/Codeway/signed_Addendum Cleanup_06.25.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Dream Games",
+            "path": "Contracts/Outbound Deals/Dream Games",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Addendum_-_Churney__Dream.pdf",
+                "path": "Contracts/Outbound Deals/Dream Games/Addendum_-_Churney__Dream.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Churney Dream Final.pdf",
+                "path": "Contracts/Outbound Deals/Dream Games/Churney Dream Final.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Dream Churney NDA signed.pdf",
+                "path": "Contracts/Outbound Deals/Dream Games/Dream Churney NDA signed.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Faire",
+            "path": "Contracts/Outbound Deals/Faire",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Vendor Agreement with Churney ApS (672929a1b4).pdf",
+                "path": "Contracts/Outbound Deals/Faire/Vendor Agreement with Churney ApS (672929a1b4).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Good Pair Days",
+            "path": "Contracts/Outbound Deals/Good Pair Days",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Good pair days pdf.pdf",
+                "path": "Contracts/Outbound Deals/Good Pair Days/Good pair days pdf.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Hutch Games",
+            "path": "Contracts/Outbound Deals/Hutch Games",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Hutch.pdf",
+                "path": "Contracts/Outbound Deals/Hutch Games/Hutch.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Jatapp",
+            "path": "Contracts/Outbound Deals/Jatapp",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Jatapp _ old pilot.pdf",
+                "path": "Contracts/Outbound Deals/Jatapp/Jatapp _ old pilot.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "LeadTech",
+            "path": "Contracts/Outbound Deals/LeadTech",
+            "type": "folder",
+            "children": [
+              {
+                "name": " Leadtech Master agreeement _ 12.11.2025.pdf",
+                "path": "Contracts/Outbound Deals/LeadTech/ Leadtech Master agreeement _ 12.11.2025.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Leadtech Signed_AI Cleaner _ 05.03.25.docx",
+                "path": "Contracts/Outbound Deals/LeadTech/Leadtech Signed_AI Cleaner _ 05.03.25.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Leadtech Signed_AI Cleaner _ 05.03.25.pdf",
+                "path": "Contracts/Outbound Deals/LeadTech/Leadtech Signed_AI Cleaner _ 05.03.25.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder).docx",
+                "path": "Contracts/Outbound Deals/LeadTech/Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder).docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder).pdf",
+                "path": "Contracts/Outbound Deals/LeadTech/Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder)(1).docx",
+                "path": "Contracts/Outbound Deals/LeadTech/Leadtech_QR Now _ 25.09.25 (also in the tiktok contracts folder)(1).docx",
+                "type": "file",
+                "ext": ".docx"
+              }
+            ]
+          },
+          {
+            "name": "Lessmore",
+            "path": "Contracts/Outbound Deals/Lessmore",
+            "type": "folder",
+            "children": [
+              {
+                "name": "27.06.25 signed_Addendum Lessmore _ Churney.pdf",
+                "path": "Contracts/Outbound Deals/Lessmore/27.06.25 signed_Addendum Lessmore _ Churney.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Lessmore_Addendum_1.pdf",
+                "path": "Contracts/Outbound Deals/Lessmore/Lessmore_Addendum_1.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Lessmore.pdf",
+                "path": "Contracts/Outbound Deals/Lessmore/Lessmore.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Manual",
+            "path": "Contracts/Outbound Deals/Manual",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Manual.pdf",
+                "path": "Contracts/Outbound Deals/Manual/Manual.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Manychat",
+            "path": "Contracts/Outbound Deals/Manychat",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Manychat contract 2025-04-05.pdf",
+                "path": "Contracts/Outbound Deals/Manychat/Manychat contract 2025-04-05.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Mindvalley",
+            "path": "Contracts/Outbound Deals/Mindvalley",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Mindvalley.pdf",
+                "path": "Contracts/Outbound Deals/Mindvalley/Mindvalley.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Olymp Trade",
+            "path": "Contracts/Outbound Deals/Olymp Trade",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Olymp Trade.pdf",
+                "path": "Contracts/Outbound Deals/Olymp Trade/Olymp Trade.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Perlego",
+            "path": "Contracts/Outbound Deals/Perlego",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Perlego.pdf",
+                "path": "Contracts/Outbound Deals/Perlego/Perlego.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Pixocial",
+            "path": "Contracts/Outbound Deals/Pixocial",
+            "type": "folder",
+            "children": [
+              {
+                "name": "17.01.2024 Churney - Pixocial_General Order form - Pix(2025.2.17) clean.docx.pdf",
+                "path": "Contracts/Outbound Deals/Pixocial/17.01.2024 Churney - Pixocial_General Order form - Pix(2025.2.17) clean.docx.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Churney - Pixocial Order Form (Airbrush BeautyPlus) -revised-Pix _ 27.10.25（2025.12.5）clean.docx.pdf",
+                "path": "Contracts/Outbound Deals/Pixocial/Churney - Pixocial Order Form (Airbrush BeautyPlus) -revised-Pix _ 27.10.25（2025.12.5）clean.docx.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Plummy",
+            "path": "Contracts/Outbound Deals/Plummy",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Complete_with_Docusign_Churney_Plummy_final_.pdf",
+                "path": "Contracts/Outbound Deals/Plummy/Complete_with_Docusign_Churney_Plummy_final_.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Podimo",
+            "path": "Contracts/Outbound Deals/Podimo",
+            "type": "folder",
+            "children": [
+              {
+                "name": "General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI.docx",
+                "path": "Contracts/Outbound Deals/Podimo/General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI.pdf",
+                "path": "Contracts/Outbound Deals/Podimo/General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI(1).docx",
+                "path": "Contracts/Outbound Deals/Podimo/General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI(1).docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI(2).docx",
+                "path": "Contracts/Outbound Deals/Podimo/General Order Form _Churney & Podimo.docx - 22.08.25 - Retention AI(2).docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "PARTNER-INTERNAL-Podimo ApS_016F98-D582B0-3043CA_churneypartnergcp_Pending Google approval.pdf",
+                "path": "Contracts/Outbound Deals/Podimo/PARTNER-INTERNAL-Podimo ApS_016F98-D582B0-3043CA_churneypartnergcp_Pending Google approval.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Podimo Agreement - 12 Aug 2023.docx (1).docx",
+                "path": "Contracts/Outbound Deals/Podimo/Podimo Agreement - 12 Aug 2023.docx (1).docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Podimo Agreement - 12 Aug 2023.docx (1).pdf",
+                "path": "Contracts/Outbound Deals/Podimo/Podimo Agreement - 12 Aug 2023.docx (1).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Podimo.pdf",
+                "path": "Contracts/Outbound Deals/Podimo/Podimo.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Reason Labs",
+            "path": "Contracts/Outbound Deals/Reason Labs",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Reason.pdf",
+                "path": "Contracts/Outbound Deals/Reason Labs/Reason.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Roots by Genetic Arts",
+            "path": "Contracts/Outbound Deals/Roots by Genetic Arts",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Roots_by_GA_-_Order_Form_signed.pdf",
+                "path": "Contracts/Outbound Deals/Roots by Genetic Arts/Roots_by_GA_-_Order_Form_signed.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Scandinavian Biolabs",
+            "path": "Contracts/Outbound Deals/Scandinavian Biolabs",
+            "type": "folder",
+            "children": [
+              {
+                "name": "SBL Final  - 11_15_24, 3_28 PM.pdf",
+                "path": "Contracts/Outbound Deals/Scandinavian Biolabs/SBL Final  - 11_15_24, 3_28 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Smol Products",
+            "path": "Contracts/Outbound Deals/Smol Products",
+            "type": "folder",
+            "children": [
+              {
+                "name": "SMOL.pdf",
+                "path": "Contracts/Outbound Deals/Smol Products/SMOL.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Søstrene Grene",
+            "path": "Contracts/Outbound Deals/Søstrene Grene",
+            "type": "folder",
+            "children": [
+              {
+                "name": "søstrene grene .pdf",
+                "path": "Contracts/Outbound Deals/Søstrene Grene/søstrene grene .pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "SpecSavers",
+            "path": "Contracts/Outbound Deals/SpecSavers",
+            "type": "folder",
+            "children": [
+              {
+                "name": "specsaver order form - initial test (1).docx",
+                "path": "Contracts/Outbound Deals/SpecSavers/specsaver order form - initial test (1).docx",
+                "type": "file",
+                "ext": ".docx"
+              }
+            ]
+          },
+          {
+            "name": "Taimi - Hily",
+            "path": "Contracts/Outbound Deals/Taimi - Hily",
+            "type": "folder",
+            "children": [
+              {
+                "name": "NDA_Appflame pdf.pdf",
+                "path": "Contracts/Outbound Deals/Taimi - Hily/NDA_Appflame pdf.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Teaching.com",
+            "path": "Contracts/Outbound Deals/Teaching.com",
+            "type": "folder",
+            "children": [
+              {
+                "name": "General Order form _Churney.docx - 8_27_25, 3_53 PM.pdf",
+                "path": "Contracts/Outbound Deals/Teaching.com/General Order form _Churney.docx - 8_27_25, 3_53 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Teknasyon",
+            "path": "Contracts/Outbound Deals/Teknasyon",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Teknasyon.docx",
+                "path": "Contracts/Outbound Deals/Teknasyon/Teknasyon.docx",
+                "type": "file",
+                "ext": ".docx"
+              },
+              {
+                "name": "Teknasyon.pdf",
+                "path": "Contracts/Outbound Deals/Teknasyon/Teknasyon.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "teknasyon(1).pdf",
+                "path": "Contracts/Outbound Deals/Teknasyon/teknasyon(1).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Touchnote",
+            "path": "Contracts/Outbound Deals/Touchnote",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Touchnote.pdf",
+                "path": "Contracts/Outbound Deals/Touchnote/Touchnote.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Trading Point",
+            "path": "Contracts/Outbound Deals/Trading Point",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Tradingpoint.pdf",
+                "path": "Contracts/Outbound Deals/Trading Point/Tradingpoint.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Trophy games",
+            "path": "Contracts/Outbound Deals/Trophy games",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Trophy games.pdf",
+                "path": "Contracts/Outbound Deals/Trophy games/Trophy games.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "UnderOutfit",
+            "path": "Contracts/Outbound Deals/UnderOutfit",
+            "type": "folder",
+            "children": [
+              {
+                "name": "UnderOutfit Order form - 1_7_25, 9_58 AM.pdf",
+                "path": "Contracts/Outbound Deals/UnderOutfit/UnderOutfit Order form - 1_7_25, 9_58 AM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Usercentrics",
+            "path": "Contracts/Outbound Deals/Usercentrics",
+            "type": "folder",
+            "children": [
+              {
+                "name": "signed_NDA.pdf",
+                "path": "Contracts/Outbound Deals/Usercentrics/signed_NDA.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Zapier",
+            "path": "Contracts/Outbound Deals/Zapier",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Aug-Dec _25-_Zapier_x_Churney.pdf",
+                "path": "Contracts/Outbound Deals/Zapier/Aug-Dec _25-_Zapier_x_Churney.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Feb-Aug_25_Churney_ApS.pdf",
+                "path": "Contracts/Outbound Deals/Zapier/Feb-Aug_25_Churney_ApS.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Jan-June _26_Churney_and_Zapier.pdf",
+                "path": "Contracts/Outbound Deals/Zapier/Jan-June _26_Churney_and_Zapier.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Software_Subscription_Agreement__Churney_ApS_and_Zapier_ (1).pdf",
+                "path": "Contracts/Outbound Deals/Zapier/Software_Subscription_Agreement__Churney_ApS_and_Zapier_ (1).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "Zapier.pdf",
+                "path": "Contracts/Outbound Deals/Zapier/Zapier.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Snapchat Deals",
+        "path": "Contracts/Snapchat Deals",
+        "type": "folder",
+        "children": [
+          {
+            "name": "Non-Disclosure_Agreement_(Churney_APS_and_Sna.pdf",
+            "path": "Contracts/Snapchat Deals/Non-Disclosure_Agreement_(Churney_APS_and_Sna.pdf",
+            "type": "file",
+            "ext": ".pdf"
+          }
+        ]
+      },
+      {
+        "name": "TikTok Deals",
+        "path": "Contracts/TikTok Deals",
+        "type": "folder",
+        "children": [
+          {
+            "name": "Bytro Labs (Stillfront)",
+            "path": "Contracts/TikTok Deals/Bytro Labs (Stillfront)",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Order form  Churney Bytro Labs.docx - 9_5_25, 6_00 PM.pdf",
+                "path": "Contracts/TikTok Deals/Bytro Labs (Stillfront)/Order form  Churney Bytro Labs.docx - 9_5_25, 6_00 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Global TikTok Contract",
+            "path": "Contracts/TikTok Deals/Global TikTok Contract",
+            "type": "folder",
+            "children": [
+              {
+                "name": "►►►FPA_Partnership_ResearchMeasurement_Chur.pdf",
+                "path": "Contracts/TikTok Deals/Global TikTok Contract/►►►FPA_Partnership_ResearchMeasurement_Chur.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "TikTok Europe Statement of Work.docx",
+                "path": "Contracts/TikTok Deals/Global TikTok Contract/TikTok Europe Statement of Work.docx",
+                "type": "file",
+                "ext": ".docx"
+              }
+            ]
+          },
+          {
+            "name": "Leadtech_s QRNow app (also in the Outbound folder, as per initial sales motion)",
+            "path": "Contracts/TikTok Deals/Leadtech_s QRNow app (also in the Outbound folder, as per initial sales motion)",
+            "type": "folder",
+            "children": [
+              {
+                "name": "General Order form _Churney_QR Now (1).docx - 9_25_25, 9_34 AM.pdf",
+                "path": "Contracts/TikTok Deals/Leadtech_s QRNow app (also in the Outbound folder, as per initial sales motion)/General Order form _Churney_QR Now (1).docx - 9_25_25, 9_34 AM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Mobiversite - Donna AI App",
+            "path": "Contracts/TikTok Deals/Mobiversite - Donna AI App",
+            "type": "folder",
+            "children": [
+              {
+                "name": "General Order form _Churney & Mobiversite_updated.docx - 12_9_25, 3_19 PM.pdf",
+                "path": "Contracts/TikTok Deals/Mobiversite - Donna AI App/General Order form _Churney & Mobiversite_updated.docx - 12_9_25, 3_19 PM.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              },
+              {
+                "name": "NDA (1) (1).pdf",
+                "path": "Contracts/TikTok Deals/Mobiversite - Donna AI App/NDA (1) (1).pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          },
+          {
+            "name": "Supersonic - Screwmaster app",
+            "path": "Contracts/TikTok Deals/Supersonic - Screwmaster app",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Supersonic - Unity Technologies.pdf",
+                "path": "Contracts/TikTok Deals/Supersonic - Screwmaster app/Supersonic - Unity Technologies.pdf",
+                "type": "file",
+                "ext": ".pdf"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Financial reports - models",
+    "path": "Financial reports - models",
+    "type": "folder",
+    "children": [
+      {
+        "name": "2024 Financial Performance Report.pdf",
+        "path": "Financial reports - models/2024 Financial Performance Report.pdf",
+        "type": "file",
+        "ext": ".pdf"
+      },
+      {
+        "name": "Churney_2025 P&L.xlsx",
+        "path": "Financial reports - models/Churney_2025 P&L.xlsx",
+        "type": "file",
+        "ext": ".xlsx"
+      },
+      {
+        "name": "Churney_product usage & take-rate.xlsx",
+        "path": "Financial reports - models/Churney_product usage & take-rate.xlsx",
+        "type": "file",
+        "ext": ".xlsx"
+      },
+      {
+        "name": "Churney_Round A Financial Model.xlsx",
+        "path": "Financial reports - models/Churney_Round A Financial Model.xlsx",
+        "type": "file",
+        "ext": ".xlsx"
+      }
+    ]
+  },
+  {
+    "name": "Churney – Series A Investor FAQ.docx",
+    "path": "Churney – Series A Investor FAQ.docx",
+    "type": "file",
+    "ext": ".docx"
+  },
+  {
+    "name": "Churney Deck.pdf",
+    "path": "Churney Deck.pdf",
+    "type": "file",
+    "ext": ".pdf"
+  },
+  {
+    "name": "Churney Technical Overview.docx",
+    "path": "Churney Technical Overview.docx",
+    "type": "file",
+    "ext": ".docx"
+  },
+  {
+    "name": "Churney_Current Revenue Pipeline_ Pilots & Sales Pipeline.xlsx",
+    "path": "Churney_Current Revenue Pipeline_ Pilots & Sales Pipeline.xlsx",
+    "type": "file",
+    "ext": ".xlsx"
+  },
+  {
+    "name": "Churney_Revenue.xlsx",
+    "path": "Churney_Revenue.xlsx",
+    "type": "file",
+    "ext": ".xlsx"
+  }
+]
