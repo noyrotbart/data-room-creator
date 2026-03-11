@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Allow large file serving
-  experimental: {},
+  experimental: { instrumentationHook: true },
 };
 
 module.exports = nextConfig;
