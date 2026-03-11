@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { resolveDocPath, getMimeType } from "@/lib/documents";
+import { resolveDocPath, getMimeType, DOCUMENTS_ROOT } from "@/lib/documents";
 import { Navbar } from "@/components/Navbar";
 import path from "path";
 import fs from "fs";
@@ -16,19 +16,24 @@ export default async function ViewPage({ params }: Props) {
   if (!session) redirect("/");
 
   const relPath = params.path.map(decodeURIComponent).join("/");
-  let absPath: string;
-  try {
-    absPath = resolveDocPath(relPath);
-  } catch {
-    return <div className="p-8 text-red-500">Invalid path</div>;
+
+  // In local dev, validate the file exists on the filesystem.
+  // In production (Vercel Blob), DOCUMENTS_ROOT doesn't exist so we skip the check
+  // and let the /api/files route handle the actual lookup.
+  if (fs.existsSync(DOCUMENTS_ROOT)) {
+    let absPath: string;
+    try {
+      absPath = resolveDocPath(relPath);
+    } catch {
+      return <div className="p-8 text-red-500">Invalid path</div>;
+    }
+    if (!fs.existsSync(absPath) || !fs.statSync(absPath).isFile()) {
+      return <div className="p-8 text-red-500">File not found</div>;
+    }
   }
 
-  if (!fs.existsSync(absPath) || !fs.statSync(absPath).isFile()) {
-    return <div className="p-8 text-red-500">File not found</div>;
-  }
-
-  const filename = path.basename(absPath);
-  const mimeType = getMimeType(absPath);
+  const filename = path.basename(relPath);
+  const mimeType = getMimeType(relPath);
   const fileUrl = `/api/files/${params.path.map(encodeURIComponent).join("/")}`;
 
   return (
