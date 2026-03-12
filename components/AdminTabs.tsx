@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 interface Props {
-  active: "analytics" | "users";
+  active: "analytics" | "users" | "drive";
 }
 
 export function AdminTabs({ active }: Props) {
   const tabs = [
     { id: "analytics", label: "Analytics", href: "/admin" },
     { id: "users", label: "Users", href: "/admin/users" },
+    { id: "drive", label: "Drive Sync", href: "/admin/drive" },
   ] as const;
 
   return (
