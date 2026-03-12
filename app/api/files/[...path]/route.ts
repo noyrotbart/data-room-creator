@@ -19,7 +19,6 @@ export async function GET(
   const relPath = params.path.map(decodeURIComponent).join("/");
   const filename = path.basename(relPath);
   const mimeType = getMimeType(filename);
-  const isPdf = mimeType === "application/pdf";
 
   // Log the view (fire and forget – don't block serving the file)
   logView({
@@ -47,9 +46,7 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       headers: {
         "Content-Type": mimeType,
-        "Content-Disposition": isPdf
-          ? `inline; filename="${filename}"`
-          : `attachment; filename="${filename}"`,
+        "Content-Disposition": `inline; filename="${filename}"`,
         "Content-Length": fileBuffer.length.toString(),
       },
     });
@@ -82,9 +79,7 @@ export async function GET(
   return new NextResponse(body, {
     headers: {
       "Content-Type": mimeType,
-      "Content-Disposition": isPdf
-        ? `inline; filename="${filename}"`
-        : `attachment; filename="${filename}"`,
+      "Content-Disposition": `inline; filename="${filename}"`,
       "Content-Length": body.byteLength.toString(),
     },
   });

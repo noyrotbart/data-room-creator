@@ -10,6 +10,8 @@ function sql() {
 
 export async function ensureTables() {
   const db = sql();
+
+  // Views table
   await db(`
     CREATE TABLE IF NOT EXISTS views (
       id SERIAL PRIMARY KEY,
@@ -21,10 +23,43 @@ export async function ensureTables() {
       user_agent TEXT
     )
   `);
+  await db(`ALTER TABLE views ADD COLUMN IF NOT EXISTS duration_seconds INTEGER`);
   await db(`CREATE INDEX IF NOT EXISTS idx_views_file ON views(file_path)`);
   await db(`CREATE INDEX IF NOT EXISTS idx_views_email ON views(user_email)`);
   await db(`CREATE INDEX IF NOT EXISTS idx_views_time ON views(viewed_at)`);
+
+  // Allowed users table
+  await db(`
+    CREATE TABLE IF NOT EXISTS allowed_users (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      name TEXT,
+      granted_at TIMESTAMPTZ DEFAULT NOW(),
+      granted_by TEXT NOT NULL,
+      revoked_at TIMESTAMPTZ
+    )
+  `);
+  await db(`ALTER TABLE allowed_users ADD COLUMN IF NOT EXISTS password_hash TEXT`);
+
+  // Document chunks table (for chat search)
+  await db(`
+    CREATE TABLE IF NOT EXISTS document_chunks (
+      id SERIAL PRIMARY KEY,
+      file_path TEXT NOT NULL,
+      chunk_index INTEGER NOT NULL,
+      chunk_text TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(file_path, chunk_index)
+    )
+  `);
+  await db(`
+    CREATE INDEX IF NOT EXISTS idx_chunks_fts
+      ON document_chunks USING gin(to_tsvector('english', chunk_text))
+  `);
+  await db(`CREATE INDEX IF NOT EXISTS idx_chunks_path ON document_chunks(file_path)`);
 }
+
+// ─── Views ────────────────────────────────────────────────────────────────────
 
 export async function logView(params: {
   userEmail: string;
@@ -47,6 +82,28 @@ export async function logView(params: {
   );
 }
 
+export async function updateViewDuration(
+  userEmail: string,
+  filePath: string,
+  durationSeconds: number
+) {
+  const db = sql();
+  // Update the most recent view for this user+file within the last 2 hours
+  await db(
+    `UPDATE views
+     SET duration_seconds = $1
+     WHERE id = (
+       SELECT id FROM views
+       WHERE user_email = $2
+         AND file_path = $3
+         AND viewed_at > NOW() - INTERVAL '2 hours'
+       ORDER BY viewed_at DESC
+       LIMIT 1
+     )`,
+    [durationSeconds, userEmail, filePath]
+  );
+}
+
 export interface ViewRow {
   id: number;
   user_email: string;
@@ -55,6 +112,7 @@ export interface ViewRow {
   viewed_at: string;
   ip_address: string | null;
   user_agent: string | null;
+  duration_seconds: number | null;
 }
 
 export async function getRecentViews(limit = 100): Promise<ViewRow[]> {
@@ -67,13 +125,14 @@ export async function getRecentViews(limit = 100): Promise<ViewRow[]> {
 }
 
 export async function getViewsByFile(): Promise<
-  { file_path: string; count: number; unique_viewers: number }[]
+  { file_path: string; count: number; unique_viewers: number; avg_seconds: number | null }[]
 > {
   const db = sql();
   const rows = await db(`
     SELECT file_path,
            COUNT(*)::int AS count,
-           COUNT(DISTINCT user_email)::int AS unique_viewers
+           COUNT(DISTINCT user_email)::int AS unique_viewers,
+           ROUND(AVG(duration_seconds))::int AS avg_seconds
     FROM views
     GROUP BY file_path
     ORDER BY count DESC
@@ -82,17 +141,156 @@ export async function getViewsByFile(): Promise<
 }
 
 export async function getViewsByUser(): Promise<
-  { user_email: string; user_name: string | null; count: number; last_seen: string }[]
+  {
+    user_email: string;
+    user_name: string | null;
+    count: number;
+    last_seen: string;
+    total_seconds: number | null;
+  }[]
 > {
   const db = sql();
   const rows = await db(`
     SELECT user_email,
            user_name,
            COUNT(*)::int AS count,
-           MAX(viewed_at) AS last_seen
+           MAX(viewed_at) AS last_seen,
+           SUM(duration_seconds)::int AS total_seconds
     FROM views
     GROUP BY user_email, user_name
     ORDER BY last_seen DESC
   `);
   return rows as any[];
+}
+
+// ─── Allowed users ────────────────────────────────────────────────────────────
+
+export interface AllowedUserRow {
+  id: number;
+  email: string;
+  name: string | null;
+  granted_at: string;
+  granted_by: string;
+  revoked_at: string | null;
+  password_hash: string | null;
+}
+
+export async function isAllowedUser(email: string): Promise<boolean> {
+  const db = sql();
+  const rows = await db(
+    `SELECT 1 FROM allowed_users WHERE email = $1 AND revoked_at IS NULL LIMIT 1`,
+    [email]
+  );
+  return rows.length > 0;
+}
+
+export async function grantAccess(params: {
+  email: string;
+  name?: string;
+  grantedBy: string;
+}): Promise<void> {
+  const db = sql();
+  // Insert new or re-grant a previously revoked user
+  await db(
+    `INSERT INTO allowed_users (email, name, granted_by, revoked_at)
+     VALUES ($1, $2, $3, NULL)
+     ON CONFLICT (email) DO UPDATE
+       SET name       = EXCLUDED.name,
+           granted_by = EXCLUDED.granted_by,
+           granted_at = NOW(),
+           revoked_at = NULL`,
+    [params.email, params.name ?? null, params.grantedBy]
+  );
+}
+
+export async function revokeAccess(email: string): Promise<void> {
+  const db = sql();
+  await db(
+    `UPDATE allowed_users SET revoked_at = NOW() WHERE email = $1`,
+    [email]
+  );
+}
+
+export async function getAllowedUsers(): Promise<AllowedUserRow[]> {
+  const db = sql();
+  const rows = await db(
+    `SELECT * FROM allowed_users ORDER BY granted_at DESC`
+  );
+  return rows as AllowedUserRow[];
+}
+
+export interface AllowedUserWithActivity extends AllowedUserRow {
+  view_count: number;
+  total_seconds: number | null;
+  last_seen: string | null;
+}
+
+export async function setUserPassword(email: string, passwordHash: string | null): Promise<void> {
+  const db = sql();
+  await db(
+    `UPDATE allowed_users SET password_hash = $1 WHERE email = $2`,
+    [passwordHash, email]
+  );
+}
+
+export async function getUserPasswordHash(email: string): Promise<string | null> {
+  const db = sql();
+  const rows = await db(
+    `SELECT password_hash FROM allowed_users WHERE email = $1 AND revoked_at IS NULL LIMIT 1`,
+    [email]
+  );
+  if (!rows.length) return null;
+  return (rows[0] as any).password_hash ?? null;
+}
+
+export async function getAllowedUsersWithActivity(): Promise<AllowedUserWithActivity[]> {
+  const db = sql();
+  const rows = await db(`
+    SELECT
+      au.*,
+      COUNT(v.id)::int            AS view_count,
+      SUM(v.duration_seconds)::int AS total_seconds,
+      MAX(v.viewed_at)             AS last_seen
+    FROM allowed_users au
+    LEFT JOIN views v ON v.user_email = au.email
+    GROUP BY au.id, au.email, au.name, au.granted_at, au.granted_by, au.revoked_at
+    ORDER BY au.granted_at DESC
+  `);
+  return rows as AllowedUserWithActivity[];
+}
+
+// ─── Document chunks (chat search) ────────────────────────────────────────────
+
+export interface ChunkRow {
+  file_path: string;
+  chunk_index: number;
+  chunk_text: string;
+  rank?: number;
+}
+
+export async function upsertChunks(chunks: { filePath: string; chunkIndex: number; chunkText: string }[]): Promise<void> {
+  if (!chunks.length) return;
+  const db = sql();
+  for (const c of chunks) {
+    await db(
+      `INSERT INTO document_chunks (file_path, chunk_index, chunk_text)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (file_path, chunk_index) DO UPDATE SET chunk_text = EXCLUDED.chunk_text`,
+      [c.filePath, c.chunkIndex, c.chunkText]
+    );
+  }
+}
+
+export async function searchChunks(query: string, limit = 8): Promise<ChunkRow[]> {
+  const db = sql();
+  const rows = await db(
+    `SELECT file_path, chunk_index, chunk_text,
+            ts_rank(to_tsvector('english', chunk_text), plainto_tsquery('english', $1)) AS rank
+     FROM document_chunks
+     WHERE to_tsvector('english', chunk_text) @@ plainto_tsquery('english', $1)
+     ORDER BY rank DESC
+     LIMIT $2`,
+    [query, limit]
+  );
+  return rows as ChunkRow[];
 }

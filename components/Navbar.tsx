@@ -20,10 +20,22 @@ export async function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        <Link href="/chat" className="text-sm text-gray-600 hover:text-blue-700 font-medium flex items-center gap-1.5">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+          </svg>
+          Chat
+        </Link>
         {showAdmin && (
-          <Link href="/admin" className="text-sm text-purple-600 hover:text-purple-800 font-medium">
-            Analytics
-          </Link>
+          <>
+            <Link href="/admin" className="text-sm text-purple-600 hover:text-purple-800 font-medium">
+              Analytics
+            </Link>
+            <Link href="/admin/users" className="text-sm text-purple-600 hover:text-purple-800 font-medium">
+              Users
+            </Link>
+          </>
         )}
         {session?.user && (
           <div className="flex items-center gap-3">

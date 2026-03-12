@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { DocxViewer } from "./DocxViewer";
+import { XlsxViewer } from "./XlsxViewer";
 
 interface Props {
   filename: string;
@@ -11,9 +13,14 @@ interface Props {
 export function ViewerClient({ filename, mimeType, fileUrl, relPath }: Props) {
   const isPdf = mimeType === "application/pdf";
   const isImage = mimeType.startsWith("image/");
-  const isViewable = isPdf || isImage;
+  const isDocx =
+    mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    mimeType === "application/msword";
+  const isXlsx =
+    mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    mimeType === "application/vnd.ms-excel" ||
+    mimeType === "text/csv";
 
-  // Breadcrumb from path
   const parts = relPath.split("/").filter(Boolean);
 
   return (
@@ -35,57 +42,34 @@ export function ViewerClient({ filename, mimeType, fileUrl, relPath }: Props) {
             </span>
           ))}
         </nav>
-        <a
-          href={fileUrl}
-          download={filename}
-          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Download
-        </a>
       </div>
 
       {/* Viewer */}
-      <div className="flex-1 bg-gray-800 flex flex-col">
+      <div className="flex-1 flex flex-col">
         {isPdf && (
           <iframe
             src={fileUrl}
             className="flex-1 w-full"
-            style={{ minHeight: "calc(100vh - 120px)" }}
+            style={{ minHeight: "calc(100vh - 112px)" }}
             title={filename}
           />
         )}
         {isImage && (
-          <div className="flex-1 flex items-center justify-center p-8">
+          <div className="flex-1 flex items-center justify-center p-8 bg-gray-800">
             <img src={fileUrl} alt={filename} className="max-w-full max-h-full object-contain shadow-2xl" />
           </div>
         )}
-        {!isViewable && (
-          <div className="flex-1 flex flex-col items-center justify-center text-white gap-4">
+        {isDocx && <DocxViewer fileUrl={fileUrl} />}
+        {isXlsx && <XlsxViewer fileUrl={fileUrl} />}
+        {!isPdf && !isImage && !isDocx && !isXlsx && (
+          <div className="flex-1 flex flex-col items-center justify-center bg-gray-800 text-white gap-3">
             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center">
               <svg className="w-8 h-8 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-medium mb-1">{filename}</p>
-              <p className="text-white/50 text-sm mb-4">This file type cannot be previewed in the browser.</p>
-              <a
-                href={fileUrl}
-                download={filename}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download {filename}
-              </a>
-            </div>
+            <p className="text-white/60 text-sm">{filename} cannot be previewed in the browser.</p>
           </div>
         )}
       </div>

@@ -1,11 +1,15 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -23,6 +27,23 @@ export default function Home() {
 
   if (status === "authenticated") return null;
 
+  async function handleCredentials(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const result = await signIn("credentials", {
+      email: email.trim(),
+      password,
+      redirect: false,
+    });
+    setLoading(false);
+    if (result?.error) {
+      setError("Invalid email or password.");
+    } else {
+      router.push("/browse");
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700">
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md text-center">
@@ -34,11 +55,10 @@ export default function Home() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Data Room</h1>
-          <p className="text-gray-500 mt-2 text-sm">
-            Secure access — Google accounts only
-          </p>
+          <p className="text-gray-500 mt-2 text-sm">Secure access for authorized users</p>
         </div>
 
+        {/* Google sign-in */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/browse" })}
           className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 transition-colors shadow-sm"
@@ -51,6 +71,41 @@ export default function Home() {
           </svg>
           Continue with Google
         </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 uppercase tracking-wider">or</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* Email + password */}
+        <form onSubmit={handleCredentials} className="text-left space-y-3">
+          <input
+            type="email"
+            required
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+          >
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
 
         <p className="mt-6 text-xs text-gray-400">
           Access is restricted to authorized users only.

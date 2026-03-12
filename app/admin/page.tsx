@@ -1,33 +1,39 @@
 import { getServerSession } from "next-auth";
 import { authOptions, isAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getViewsByFile, getViewsByUser, getRecentViews } from "@/lib/db";
+import { getViewsByFile, getViewsByUser, getRecentViews, getAllowedUsersWithActivity } from "@/lib/db";
 import { Navbar } from "@/components/Navbar";
+import { AdminTabs } from "@/components/AdminTabs";
 import { formatDistanceToNow } from "date-fns";
 import path from "path";
+import Link from "next/link";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
   if (!isAdmin(session.user?.email)) redirect("/browse");
 
-  const [byUser, byFile, recent] = await Promise.all([
+  const [byUser, byFile, recent, allUsers] = await Promise.all([
     getViewsByUser(),
     getViewsByFile(),
     getRecentViews(100),
+    getAllowedUsersWithActivity(),
   ]);
+
+  const neverOpened = allUsers.filter((u) => !u.revoked_at && !u.view_count);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h1>
+        <AdminTabs active="analytics" />
 
         {/* Summary cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <StatCard label="Total views" value={recent.length} />
           <StatCard label="Unique visitors" value={byUser.length} />
           <StatCard label="Documents viewed" value={byFile.length} />
+          <StatCard label="Never opened" value={neverOpened.length} highlight={neverOpened.length > 0} href="/admin/users" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -41,6 +47,7 @@ export default async function AdminPage() {
                   <tr className="text-left text-xs text-gray-500 uppercase tracking-wider border-b">
                     <th className="pb-2">User</th>
                     <th className="pb-2 text-right">Views</th>
+                    <th className="pb-2 text-right">Total time</th>
                     <th className="pb-2 text-right">Last seen</th>
                   </tr>
                 </thead>
@@ -54,6 +61,9 @@ export default async function AdminPage() {
                         )}
                       </td>
                       <td className="py-2.5 text-right font-medium">{u.count}</td>
+                      <td className="py-2.5 text-right text-gray-400 text-xs">
+                        {formatDuration(u.total_seconds)}
+                      </td>
                       <td className="py-2.5 text-right text-gray-400 text-xs">
                         {formatDistanceToNow(new Date(u.last_seen), { addSuffix: true })}
                       </td>
@@ -75,6 +85,7 @@ export default async function AdminPage() {
                     <th className="pb-2">Document</th>
                     <th className="pb-2 text-right">Views</th>
                     <th className="pb-2 text-right">Unique</th>
+                    <th className="pb-2 text-right">Avg time</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -88,6 +99,9 @@ export default async function AdminPage() {
                       </td>
                       <td className="py-2.5 text-right font-medium">{f.count}</td>
                       <td className="py-2.5 text-right text-gray-400">{f.unique_viewers}</td>
+                      <td className="py-2.5 text-right text-gray-400 text-xs">
+                        {formatDuration(f.avg_seconds)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -95,6 +109,32 @@ export default async function AdminPage() {
             )}
           </Section>
         </div>
+
+        {/* Never opened */}
+        {neverOpened.length > 0 && (
+          <Section title="Invited but never opened" action={<Link href="/admin/users" className="text-sm text-blue-600 hover:text-blue-700 font-medium">Manage invites →</Link>}>
+            <div className="divide-y divide-gray-50">
+              {neverOpened.map((u) => (
+                <div key={u.id} className="py-3 flex items-center gap-3">
+                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold text-xs flex-shrink-0">
+                    {(u.name ?? u.email)[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900">{u.name ?? u.email}</p>
+                    {u.name && <p className="text-xs text-gray-400">{u.email}</p>}
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    invited {formatDistanceToNow(new Date(u.granted_at), { addSuffix: true })}
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                    Never opened
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
 
         {/* Activity feed */}
         <Section title="Recent activity">
@@ -112,6 +152,12 @@ export default async function AdminPage() {
                       <span className="font-medium">{v.user_name ?? v.user_email}</span>
                       {" viewed "}
                       <span className="font-medium text-blue-700">{path.basename(v.file_path)}</span>
+                      {v.duration_seconds != null && v.duration_seconds > 0 && (
+                        <span className="text-gray-400">
+                          {" for "}
+                          <span className="text-gray-600">{formatDuration(v.duration_seconds)}</span>
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-gray-400 truncate">{v.file_path}</p>
                   </div>
@@ -128,19 +174,35 @@ export default async function AdminPage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <p className="text-sm text-gray-500 mb-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-    </div>
-  );
+function formatDuration(seconds: number | null | undefined): string {
+  if (!seconds || seconds < 1) return "—";
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  if (m < 60) return s > 0 ? `${m}m ${s}s` : `${m}m`;
+  const h = Math.floor(m / 60);
+  const rem = m % 60;
+  return rem > 0 ? `${h}h ${rem}m` : `${h}h`;
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function StatCard({ label, value, highlight, href }: { label: string; value: number; highlight?: boolean; href?: string }) {
+  const inner = (
+    <div className={`rounded-xl border p-5 transition-colors ${highlight ? "bg-amber-50 border-amber-200" : "bg-white border-gray-200"} ${href ? "cursor-pointer hover:shadow-sm" : ""}`}>
+      <p className={`text-sm mb-1 ${highlight ? "text-amber-700" : "text-gray-500"}`}>{label}</p>
+      <p className={`text-3xl font-bold ${highlight ? "text-amber-800" : "text-gray-900"}`}>{value}</p>
+      {href && <p className={`text-xs mt-1 ${highlight ? "text-amber-600" : "text-gray-400"}`}>Manage →</p>}
+    </div>
+  );
+  return href ? <Link href={href}>{inner}</Link> : inner;
+}
+
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <h2 className="text-base font-semibold text-gray-900 mb-4">{title}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+        {action}
+      </div>
       {children}
     </div>
   );
