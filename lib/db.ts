@@ -269,6 +269,50 @@ export async function getAllowedUsersWithActivity(): Promise<AllowedUserWithActi
   return rows as AllowedUserWithActivity[];
 }
 
+export async function getAllowedUserByEmail(email: string): Promise<AllowedUserRow | null> {
+  const db = sql();
+  const rows = await db(`SELECT * FROM allowed_users WHERE email = $1 LIMIT 1`, [email]);
+  return rows.length ? (rows[0] as AllowedUserRow) : null;
+}
+
+export interface UserDocumentActivity {
+  file_path: string;
+  view_count: number;
+  total_seconds: number | null;
+  last_viewed: string;
+  first_viewed: string;
+}
+
+export async function getViewsForUser(email: string): Promise<{
+  byDocument: UserDocumentActivity[];
+  recent: ViewRow[];
+}> {
+  const db = sql();
+
+  const byDoc = await db(
+    `SELECT file_path,
+            COUNT(*)::int                 AS view_count,
+            SUM(duration_seconds)::int    AS total_seconds,
+            MAX(viewed_at)                AS last_viewed,
+            MIN(viewed_at)                AS first_viewed
+     FROM views
+     WHERE user_email = $1
+     GROUP BY file_path
+     ORDER BY last_viewed DESC`,
+    [email]
+  );
+
+  const recent = await db(
+    `SELECT * FROM views WHERE user_email = $1 ORDER BY viewed_at DESC LIMIT 100`,
+    [email]
+  );
+
+  return {
+    byDocument: byDoc as UserDocumentActivity[],
+    recent: recent as ViewRow[],
+  };
+}
+
 // ─── Document chunks (chat search) ────────────────────────────────────────────
 
 export interface ChunkRow {

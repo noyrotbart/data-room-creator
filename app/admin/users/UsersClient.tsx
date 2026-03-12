@@ -1,6 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 import type { AllowedUserWithActivity } from "@/lib/db";
 
 export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithActivity[] }) {
@@ -285,7 +286,12 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                 {activeSorted.map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50">
                     <td className="px-5 py-3">
-                      <div className="font-medium text-gray-900">{u.name ?? u.email}</div>
+                      <Link
+                        href={`/admin/users/${encodeURIComponent(u.email)}`}
+                        className="font-medium text-gray-900 hover:text-blue-600 hover:underline"
+                      >
+                        {u.name ?? u.email}
+                      </Link>
                       {u.name && <div className="text-xs text-gray-400">{u.email}</div>}
                     </td>
                     <td className="px-5 py-3">
