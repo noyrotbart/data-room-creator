@@ -6,6 +6,7 @@ import {
   extractDriveText,
   isTextExtractable,
   MIME_FOLDER,
+  getAdminDriveAccessToken,
 } from "@/lib/drive";
 
 // Allow up to 5 minutes for the sync on Vercel Pro
@@ -98,12 +99,12 @@ export async function POST() {
     });
   }
 
-  const accessToken = (session as any).accessToken as string | undefined;
+  const accessToken = await getAdminDriveAccessToken();
   if (!accessToken) {
     return new Response(
       JSON.stringify({
         error:
-          "No Google Drive access token found. Please sign out and sign back in to grant Drive access.",
+          "Google Drive not connected. Click 'Connect Google Drive' in the Drive Sync page.",
       }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );

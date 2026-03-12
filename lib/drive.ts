@@ -1,10 +1,57 @@
 /**
  * Google Drive API client.
- * Uses the admin's OAuth access token (stored in NextAuth JWT) to access Drive.
- * The access token is obtained via the drive.readonly scope added to the Google provider.
+ * Drive access tokens are stored in the admin_tokens DB table via the
+ * /api/admin/drive-connect OAuth flow — completely separate from regular sign-in.
  */
 
+import { getAdminToken, setAdminToken } from "@/lib/db";
+
 const DRIVE_API = "https://www.googleapis.com/drive/v3";
+
+/**
+ * Returns a valid Drive access token for the admin, refreshing it if needed.
+ * Returns null if no Drive connection has been established yet.
+ */
+export async function getAdminDriveAccessToken(): Promise<string | null> {
+  const [accessToken, refreshToken, expiresStr] = await Promise.all([
+    getAdminToken("drive_access_token"),
+    getAdminToken("drive_refresh_token"),
+    getAdminToken("drive_token_expires"),
+  ]);
+
+  if (!accessToken) return null;
+
+  // Token still valid (with 60s buffer)
+  const expires = expiresStr ? parseInt(expiresStr) : 0;
+  if (expires && Date.now() < expires - 60_000) {
+    return accessToken;
+  }
+
+  // Try to refresh
+  if (!refreshToken) return null;
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    await setAdminToken("drive_access_token", data.access_token);
+    await setAdminToken(
+      "drive_token_expires",
+      String(Date.now() + (data.expires_in as number) * 1000)
+    );
+    return data.access_token as string;
+  } catch {
+    return null;
+  }
+}
 
 export const MIME_FOLDER = "application/vnd.google-apps.folder";
 export const MIME_GDOC = "application/vnd.google-apps.document";

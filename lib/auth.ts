@@ -39,11 +39,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          // Request Drive read-only access for admin Drive sync feature
-          scope:
-            "openid email profile https://www.googleapis.com/auth/drive.readonly",
-          access_type: "offline",
-          prompt: "consent",
+          // Only request basic profile — Drive access is granted separately
+          // via the admin /api/admin/drive-connect flow (admin only)
+          scope: "openid email profile",
         },
       },
     }),

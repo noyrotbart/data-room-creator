@@ -58,6 +58,15 @@ export async function ensureTables() {
       ON document_chunks USING gin(to_tsvector('english', chunk_text))
   `);
   await db(`CREATE INDEX IF NOT EXISTS idx_chunks_path ON document_chunks(file_path)`);
+
+  // Admin key-value token store (Drive OAuth tokens, etc.)
+  await db(`
+    CREATE TABLE IF NOT EXISTS admin_tokens (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
 }
 
 // ─── Views ────────────────────────────────────────────────────────────────────
@@ -311,6 +320,24 @@ export async function getViewsForUser(email: string): Promise<{
     byDocument: byDoc as UserDocumentActivity[],
     recent: recent as ViewRow[],
   };
+}
+
+// ─── Admin tokens (Drive OAuth, etc.) ─────────────────────────────────────────
+
+export async function setAdminToken(key: string, value: string): Promise<void> {
+  const db = sql();
+  await db(
+    `INSERT INTO admin_tokens (key, value, updated_at)
+     VALUES ($1, $2, NOW())
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+    [key, value]
+  );
+}
+
+export async function getAdminToken(key: string): Promise<string | null> {
+  const db = sql();
+  const rows = await db(`SELECT value FROM admin_tokens WHERE key = $1`, [key]);
+  return rows.length ? (rows[0] as any).value : null;
 }
 
 // ─── Document chunks (chat search) ────────────────────────────────────────────

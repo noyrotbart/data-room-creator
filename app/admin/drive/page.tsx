@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { AdminTabs } from "@/components/AdminTabs";
 import { DriveClient } from "./DriveClient";
+import { getAdminToken } from "@/lib/db";
 
 export default async function DrivePage() {
   const session = await getServerSession(authOptions);
@@ -11,7 +12,7 @@ export default async function DrivePage() {
   if (!isAdmin(session.user?.email)) redirect("/browse");
 
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID ?? null;
-  const hasAccessToken = !!(session as any).accessToken;
+  const hasAccessToken = !!(await getAdminToken("drive_access_token"));
 
   return (
     <div className="min-h-screen flex flex-col">
