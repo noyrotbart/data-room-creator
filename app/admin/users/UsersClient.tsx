@@ -7,6 +7,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
   const [users, setUsers] = useState(initialUsers);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [durationDays, setDurationDays] = useState(7);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<{ type: "success" | "warning"; message: string } | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -33,12 +34,13 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
       const res = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
+        body: JSON.stringify({ email: email.trim(), name: name.trim(), durationDays }),
       });
       if (res.ok) {
         const j = await res.json().catch(() => ({}));
         setEmail("");
         setName("");
+        setDurationDays(7);
         setShowForm(false);
         await refresh();
         if (j.emailSent) {
@@ -227,6 +229,17 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
               onChange={(e) => setName(e.target.value)}
               className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <div className="flex items-center gap-1.5 border border-gray-300 rounded-lg px-3 py-2 bg-white">
+              <input
+                type="number"
+                min={1}
+                max={365}
+                value={durationDays}
+                onChange={(e) => setDurationDays(Math.max(1, parseInt(e.target.value) || 7))}
+                className="w-12 text-sm text-center focus:outline-none"
+              />
+              <span className="text-sm text-gray-400">days</span>
+            </div>
             <button
               type="submit"
               disabled={isPending}
@@ -264,6 +277,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                   <th className="px-5 py-3 text-right">Time spent</th>
                   <th className="px-5 py-3 text-right">Last seen</th>
                   <th className="px-5 py-3 text-right">Invited</th>
+                  <th className="px-5 py-3 text-right">Expires</th>
                   <th className="px-5 py-3"></th>
                 </tr>
               </thead>
@@ -300,6 +314,9 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                     </td>
                     <td className="px-5 py-3 text-right text-gray-400 text-xs">
                       {formatDistanceToNow(new Date(u.granted_at), { addSuffix: true })}
+                    </td>
+                    <td className="px-5 py-3 text-right text-xs">
+                      <ExpiryBadge expiresAt={u.expires_at} />
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
@@ -370,6 +387,28 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
       )}
     </div>
   );
+}
+
+function ExpiryBadge({ expiresAt }: { expiresAt: string | null }) {
+  if (!expiresAt) return <span className="text-gray-300">No limit</span>;
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  const days = Math.ceil(ms / 86_400_000);
+  if (days < 0) return (
+    <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 border border-red-200 text-xs font-medium px-2 py-0.5 rounded-full">
+      Expired
+    </span>
+  );
+  if (days <= 2) return (
+    <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-600 border border-orange-200 text-xs font-medium px-2 py-0.5 rounded-full">
+      {days}d left
+    </span>
+  );
+  if (days <= 7) return (
+    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium px-2 py-0.5 rounded-full">
+      {days}d left
+    </span>
+  );
+  return <span className="text-gray-400">{days}d left</span>;
 }
 
 function formatDuration(seconds: number | null | undefined): string {

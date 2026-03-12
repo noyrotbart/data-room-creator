@@ -58,13 +58,24 @@ async function extractDocx(filePath: string): Promise<string> {
 }
 
 async function extractXlsx(filePath: string): Promise<string> {
-  const XLSX = await import("xlsx");
+  const XLSXmod = await import("xlsx");
+  const XLSX = (XLSXmod as any).default ?? XLSXmod;
+  const MAX_CHARS = 200_000; // cap at ~200KB to avoid OOM on large models
   try {
     const wb = XLSX.readFile(filePath);
-    return wb.SheetNames.map((name) => {
+    const parts: string[] = [];
+    let total = 0;
+    for (const name of wb.SheetNames as string[]) {
+      // Skip internal/temp calculation sheets
+      const lower = name.toLowerCase();
+      if (lower.startsWith("tmp_") || lower.startsWith("temp_") || lower.startsWith("sheet")) continue;
       const ws = wb.Sheets[name];
-      return `[Sheet: ${name}]\n${XLSX.utils.sheet_to_csv(ws)}`;
-    }).join("\n\n");
+      const csv = XLSX.utils.sheet_to_csv(ws) as string;
+      parts.push(`[Sheet: ${name}]\n${csv}`);
+      total += csv.length;
+      if (total >= MAX_CHARS) break;
+    }
+    return parts.join("\n\n");
   } catch {
     return "";
   }

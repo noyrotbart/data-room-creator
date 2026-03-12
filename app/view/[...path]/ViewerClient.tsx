@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { DocxViewer } from "./DocxViewer";
 import { XlsxViewer } from "./XlsxViewer";
 
@@ -11,6 +12,29 @@ interface Props {
 }
 
 export function ViewerClient({ filename, mimeType, fileUrl, relPath }: Props) {
+  const startRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    startRef.current = Date.now();
+
+    function reportDuration() {
+      const seconds = Math.round((Date.now() - startRef.current) / 1000);
+      if (seconds < 2) return;
+      // sendBeacon fires even when the tab is being closed
+      navigator.sendBeacon(
+        "/api/views/duration",
+        new Blob([JSON.stringify({ filePath: relPath, durationSeconds: seconds })], {
+          type: "application/json",
+        })
+      );
+    }
+
+    window.addEventListener("beforeunload", reportDuration);
+    return () => {
+      window.removeEventListener("beforeunload", reportDuration);
+      reportDuration(); // also fires on in-app navigation (React unmount)
+    };
+  }, [relPath]);
   const isPdf = mimeType === "application/pdf";
   const isImage = mimeType.startsWith("image/");
   const isDocx =

@@ -40,6 +40,7 @@ export async function ensureTables() {
     )
   `);
   await db(`ALTER TABLE allowed_users ADD COLUMN IF NOT EXISTS password_hash TEXT`);
+  await db(`ALTER TABLE allowed_users ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ`);
 
   // Document chunks table (for chat search)
   await db(`
@@ -173,12 +174,17 @@ export interface AllowedUserRow {
   granted_by: string;
   revoked_at: string | null;
   password_hash: string | null;
+  expires_at: string | null;
 }
 
 export async function isAllowedUser(email: string): Promise<boolean> {
   const db = sql();
   const rows = await db(
-    `SELECT 1 FROM allowed_users WHERE email = $1 AND revoked_at IS NULL LIMIT 1`,
+    `SELECT 1 FROM allowed_users
+     WHERE email = $1
+       AND revoked_at IS NULL
+       AND (expires_at IS NULL OR expires_at > NOW())
+     LIMIT 1`,
     [email]
   );
   return rows.length > 0;
@@ -188,18 +194,22 @@ export async function grantAccess(params: {
   email: string;
   name?: string;
   grantedBy: string;
+  durationDays?: number; // null/undefined = no expiry
 }): Promise<void> {
   const db = sql();
-  // Insert new or re-grant a previously revoked user
+  const expiresAt = params.durationDays
+    ? new Date(Date.now() + params.durationDays * 86_400_000).toISOString()
+    : null;
   await db(
-    `INSERT INTO allowed_users (email, name, granted_by, revoked_at)
-     VALUES ($1, $2, $3, NULL)
+    `INSERT INTO allowed_users (email, name, granted_by, revoked_at, expires_at)
+     VALUES ($1, $2, $3, NULL, $4)
      ON CONFLICT (email) DO UPDATE
        SET name       = EXCLUDED.name,
            granted_by = EXCLUDED.granted_by,
            granted_at = NOW(),
-           revoked_at = NULL`,
-    [params.email, params.name ?? null, params.grantedBy]
+           revoked_at = NULL,
+           expires_at = EXCLUDED.expires_at`,
+    [params.email, params.name ?? null, params.grantedBy, expiresAt]
   );
 }
 
