@@ -43,10 +43,8 @@ export async function POST(request: NextRequest) {
   const cleanName = typeof name === "string" ? name.trim() || undefined : undefined;
   const cleanDays = typeof durationDays === "number" && durationDays > 0 ? Math.round(durationDays) : 7;
 
-  const passwordHash =
-    typeof password === "string" && password.length >= 8
-      ? await bcrypt.hash(password, 10)
-      : null;
+  const hasPassword = typeof password === "string" && password.length >= 8;
+  const passwordHash = hasPassword ? await bcrypt.hash(password as string, 10) : null;
 
   await grantAccess({
     email: cleanEmail,
@@ -56,7 +54,12 @@ export async function POST(request: NextRequest) {
     passwordHash,
   });
 
-  const emailResult = await sendInviteEmail({ toEmail: cleanEmail, toName: cleanName, invitedBy: session.user!.email! });
+  const emailResult = await sendInviteEmail({
+    toEmail: cleanEmail,
+    toName: cleanName,
+    invitedBy: session.user!.email!,
+    hasPassword,
+  });
 
   return NextResponse.json({ ok: true, emailSent: emailResult.ok, emailError: emailResult.error ?? null });
 }
