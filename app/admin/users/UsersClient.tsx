@@ -9,6 +9,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [durationDays, setDurationDays] = useState(7);
+  const [invitePassword, setInvitePassword] = useState("");
   const [error, setError] = useState("");
   const [toast, setToast] = useState<{ type: "success" | "warning"; message: string } | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -35,11 +36,12 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
       const res = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim(), durationDays }),
+        body: JSON.stringify({ email: email.trim(), name: name.trim(), durationDays, password: invitePassword || undefined }),
       });
       if (res.ok) {
         const j = await res.json().catch(() => ({}));
         setEmail("");
+        setInvitePassword("");
         setName("");
         setDurationDays(7);
         setShowForm(false);
@@ -228,6 +230,13 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
               placeholder="Name (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Password (optional)"
+              value={invitePassword}
+              onChange={(e) => setInvitePassword(e.target.value)}
               className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="flex items-center gap-1.5 border border-gray-300 rounded-lg px-3 py-2 bg-white">
@@ -427,3 +436,4 @@ function formatDuration(seconds: number | null | undefined): string {
   const rem = m % 60;
   return rem > 0 ? `${h}h ${rem}m` : `${h}h`;
 }
+
