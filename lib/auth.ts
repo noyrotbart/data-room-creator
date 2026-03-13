@@ -3,7 +3,7 @@ import type { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { isAllowedUser, getUserPasswordHash } from "@/lib/db";
+import { isAllowedUser, getUserPasswordHash, getAllowedUserByEmail } from "@/lib/db";
 
 async function refreshGoogleToken(token: JWT): Promise<JWT> {
   try {
@@ -71,11 +71,16 @@ export const authOptions: NextAuthOptions = {
       // Credentials provider: authorize() already validated password + allowed status
       if (account?.provider === "credentials") return true;
       if (account?.provider !== "google") return false;
-      // Admin always allowed
+      // Admin always allowed via Google
       if (isAdmin(user.email)) return true;
       // Everyone else must be explicitly granted access
       try {
-        return await isAllowedUser(user.email ?? "");
+        const allowed = await getAllowedUserByEmail(user.email ?? "");
+        if (!allowed || allowed.revoked_at) return false;
+        if (allowed.expires_at && new Date(allowed.expires_at) < new Date()) return false;
+        // If this user has a password set, they are password-only — block Google sign-in
+        if (allowed.password_hash) return false;
+        return true;
       } catch {
         return false; // fail closed if DB is unreachable
       }
