@@ -204,21 +204,23 @@ export async function grantAccess(params: {
   name?: string;
   grantedBy: string;
   durationDays?: number; // null/undefined = no expiry
+  passwordHash?: string | null;
 }): Promise<void> {
   const db = sql();
   const expiresAt = params.durationDays
     ? new Date(Date.now() + params.durationDays * 86_400_000).toISOString()
     : null;
   await db(
-    `INSERT INTO allowed_users (email, name, granted_by, revoked_at, expires_at)
-     VALUES ($1, $2, $3, NULL, $4)
+    `INSERT INTO allowed_users (email, name, granted_by, revoked_at, expires_at, password_hash)
+     VALUES ($1, $2, $3, NULL, $4, $5)
      ON CONFLICT (email) DO UPDATE
-       SET name       = EXCLUDED.name,
-           granted_by = EXCLUDED.granted_by,
-           granted_at = NOW(),
-           revoked_at = NULL,
-           expires_at = EXCLUDED.expires_at`,
-    [params.email, params.name ?? null, params.grantedBy, expiresAt]
+       SET name          = EXCLUDED.name,
+           granted_by    = EXCLUDED.granted_by,
+           granted_at    = NOW(),
+           revoked_at    = NULL,
+           expires_at    = EXCLUDED.expires_at,
+           password_hash = COALESCE(EXCLUDED.password_hash, allowed_users.password_hash)`,
+    [params.email, params.name ?? null, params.grantedBy, expiresAt, params.passwordHash ?? null]
   );
 }
 
@@ -375,3 +377,4 @@ export async function searchChunks(query: string, limit = 8): Promise<ChunkRow[]
   );
   return rows as ChunkRow[];
 }
+
