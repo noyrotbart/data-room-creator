@@ -74,7 +74,7 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Subdomain</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">URL slug</label>
             <div className="flex items-center">
               <input
                 type="text"
@@ -82,12 +82,10 @@ export default function SignupPage() {
                 placeholder="acme"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span className="bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg px-3 py-2.5 text-sm text-gray-500">
-                .{typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "dataroom.io") : "dataroom.io"}
-              </span>
             </div>
+            <p className="text-xs text-gray-400 mt-1">Used as your organization identifier</p>
           </div>
 
           <hr className="my-2" />

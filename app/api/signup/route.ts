@@ -62,11 +62,5 @@ export async function POST(request: NextRequest) {
     passwordHash,
   });
 
-  const platformDomain = process.env.PLATFORM_DOMAIN ?? "localhost:3000";
-  const protocol = platformDomain.includes("localhost") ? "http" : "https";
-  const orgUrl = platformDomain.includes("localhost")
-    ? `${protocol}://${platformDomain}/setup?org=${slug}`
-    : `${protocol}://${slug}.${platformDomain}/setup`;
-
-  return NextResponse.json({ ok: true, slug: org.slug, orgUrl });
+  return NextResponse.json({ ok: true, slug: org.slug, orgUrl: `/setup?org=${slug}` });
 }
