@@ -14,7 +14,6 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
   const [toast, setToast] = useState<{ type: "success" | "warning"; message: string } | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [isPending, startTransition] = useTransition();
-  // Password modal state
   const [pwModal, setPwModal] = useState<{ email: string; hasPassword: boolean } | null>(null);
   const [pwValue, setPwValue] = useState("");
   const [pwError, setPwError] = useState("");
@@ -40,17 +39,10 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
       });
       if (res.ok) {
         const j = await res.json().catch(() => ({}));
-        setEmail("");
-        setInvitePassword("");
-        setName("");
-        setDurationDays(7);
-        setShowForm(false);
+        setEmail(""); setInvitePassword(""); setName(""); setDurationDays(7); setShowForm(false);
         await refresh();
-        if (j.emailSent) {
-          showToast("success", `Invite sent to ${email.trim()}`);
-        } else {
-          showToast("warning", `Access granted, but email failed: ${j.emailError ?? "unknown error"}`);
-        }
+        if (j.emailSent) showToast("success", `Invite sent to ${email.trim()}`);
+        else showToast("warning", `Access granted, but email failed: ${j.emailError ?? "unknown error"}`);
       } else {
         const j = await res.json().catch(() => ({}));
         setError(j.error ?? "Failed to grant access");
@@ -72,6 +64,17 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
     });
   }
 
+  async function handleToggleDownload(userEmail: string, current: boolean) {
+    startTransition(async () => {
+      await fetch(`/api/admin/users/${encodeURIComponent(userEmail)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ can_download: !current }),
+      });
+      await refresh();
+    });
+  }
+
   async function handleSetPassword(e: React.FormEvent) {
     e.preventDefault();
     if (!pwModal) return;
@@ -83,8 +86,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
         body: JSON.stringify({ password: pwValue }),
       });
       if (res.ok) {
-        setPwModal(null);
-        setPwValue("");
+        setPwModal(null); setPwValue("");
         showToast("success", pwValue ? `Password set for ${pwModal.email}` : `Password cleared for ${pwModal.email}`);
         await refresh();
       } else {
@@ -96,15 +98,12 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
 
   const active = users.filter((u) => !u.revoked_at);
   const revoked = users.filter((u) => u.revoked_at);
-
-  // Sort active: never-opened first, then by last_seen desc
   const activeSorted = [...active].sort((a, b) => {
     if (!a.last_seen && b.last_seen) return -1;
     if (a.last_seen && !b.last_seen) return 1;
     if (!a.last_seen && !b.last_seen) return 0;
     return new Date(b.last_seen!).getTime() - new Date(a.last_seen!).getTime();
   });
-
   const neverOpenedCount = active.filter((u) => !u.view_count).length;
 
   return (
@@ -138,12 +137,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ password: null }),
                         });
-                        if (res.ok) {
-                          setPwModal(null);
-                          setPwValue("");
-                          showToast("success", `Password cleared for ${pwModal.email}`);
-                          await refresh();
-                        }
+                        if (res.ok) { setPwModal(null); setPwValue(""); showToast("success", `Password cleared for ${pwModal.email}`); await refresh(); }
                       });
                     }}
                     disabled={isPending}
@@ -152,18 +146,8 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                     Clear password
                   </button>
                 )}
-                <button
-                  type="button"
-                  onClick={() => { setPwModal(null); setPwValue(""); setPwError(""); }}
-                  className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending || pwValue.length < 8}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-colors"
-                >
+                <button type="button" onClick={() => { setPwModal(null); setPwValue(""); setPwError(""); }} className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5">Cancel</button>
+                <button type="submit" disabled={isPending || pwValue.length < 8} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-colors">
                   {isPending ? "Saving…" : "Save"}
                 </button>
               </div>
@@ -193,9 +177,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                 {neverOpenedCount} never opened
               </span>
             )}
-            {revoked.length > 0 && (
-              <span className="ml-2 text-gray-400">· {revoked.length} revoked</span>
-            )}
+            {revoked.length > 0 && <span className="ml-2 text-gray-400">· {revoked.length} revoked</span>}
           </p>
         </div>
         <button
@@ -211,59 +193,25 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
 
       {/* Invite form */}
       {showForm && (
-        <form
-          onSubmit={handleGrant}
-          className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6"
-        >
+        <form onSubmit={handleGrant} className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
           <h2 className="text-sm font-semibold text-blue-900 mb-4">Invite a new user</h2>
           <div className="flex gap-3 flex-wrap">
-            <input
-              type="email"
-              required
-              placeholder="email@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Name (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password (optional)"
-              value={invitePassword}
-              onChange={(e) => setInvitePassword(e.target.value)}
-              className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input type="email" required placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="text" placeholder="Name (optional)" value={name} onChange={(e) => setName(e.target.value)}
+              className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="password" placeholder="Password (optional)" value={invitePassword} onChange={(e) => setInvitePassword(e.target.value)}
+              className="flex-1 min-w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <div className="flex items-center gap-1.5 border border-gray-300 rounded-lg px-3 py-2 bg-white">
-              <input
-                type="number"
-                min={1}
-                max={365}
-                value={durationDays}
-                onChange={(e) => setDurationDays(Math.max(1, parseInt(e.target.value) || 7))}
-                className="w-12 text-sm text-center focus:outline-none"
-              />
+              <input type="number" min={1} max={365} value={durationDays} onChange={(e) => setDurationDays(Math.max(1, parseInt(e.target.value) || 7))}
+                className="w-12 text-sm text-center focus:outline-none" />
               <span className="text-sm text-gray-400">days</span>
             </div>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
-            >
+            <button type="submit" disabled={isPending}
+              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
               {isPending ? "Saving…" : "Invite"}
             </button>
-            <button
-              type="button"
-              onClick={() => { setShowForm(false); setError(""); }}
-              className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2"
-            >
-              Cancel
-            </button>
+            <button type="button" onClick={() => { setShowForm(false); setError(""); }} className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2">Cancel</button>
           </div>
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </form>
@@ -288,6 +236,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                   <th className="px-5 py-3 text-right">Last seen</th>
                   <th className="px-5 py-3 text-right">Invited</th>
                   <th className="px-5 py-3 text-right">Expires</th>
+                  <th className="px-5 py-3 text-center">Download</th>
                   <th className="px-5 py-3"></th>
                 </tr>
               </thead>
@@ -295,10 +244,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                 {activeSorted.map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50">
                     <td className="px-5 py-3">
-                      <Link
-                        href={`/admin/users/${encodeURIComponent(u.email)}`}
-                        className="font-medium text-gray-900 hover:text-blue-600 hover:underline"
-                      >
+                      <Link href={`/admin/users/${encodeURIComponent(u.email)}`} className="font-medium text-gray-900 hover:text-blue-600 hover:underline">
                         {u.name ?? u.email}
                       </Link>
                       {u.name && <div className="text-xs text-gray-400">{u.email}</div>}
@@ -306,32 +252,32 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                     <td className="px-5 py-3">
                       {!u.view_count ? (
                         <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium px-2.5 py-1 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
-                          Never opened
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />Never opened
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 text-xs font-medium px-2.5 py-1 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-                          Active
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />Active
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-right font-medium text-gray-700">
-                      {u.view_count || "—"}
-                    </td>
+                    <td className="px-5 py-3 text-right font-medium text-gray-700">{u.view_count || "—"}</td>
+                    <td className="px-5 py-3 text-right text-gray-400 text-xs">{formatDuration(u.total_seconds)}</td>
                     <td className="px-5 py-3 text-right text-gray-400 text-xs">
-                      {formatDuration(u.total_seconds)}
-                    </td>
-                    <td className="px-5 py-3 text-right text-gray-400 text-xs">
-                      {u.last_seen
-                        ? formatDistanceToNow(new Date(u.last_seen), { addSuffix: true })
-                        : "—"}
+                      {u.last_seen ? formatDistanceToNow(new Date(u.last_seen), { addSuffix: true }) : "—"}
                     </td>
                     <td className="px-5 py-3 text-right text-gray-400 text-xs">
                       {formatDistanceToNow(new Date(u.granted_at), { addSuffix: true })}
                     </td>
-                    <td className="px-5 py-3 text-right text-xs">
-                      <ExpiryBadge expiresAt={u.expires_at} />
+                    <td className="px-5 py-3 text-right text-xs"><ExpiryBadge expiresAt={u.expires_at} /></td>
+                    <td className="px-5 py-3 text-center">
+                      <button
+                        onClick={() => handleToggleDownload(u.email, u.can_download)}
+                        disabled={isPending}
+                        title={u.can_download ? "Disable downloads" : "Enable downloads"}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${u.can_download ? "bg-blue-600" : "bg-gray-200"}`}
+                      >
+                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${u.can_download ? "translate-x-4" : "translate-x-1"}`} />
+                      </button>
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
@@ -343,13 +289,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                         >
                           {u.password_hash ? "🔑 Reset pw" : "Set pw"}
                         </button>
-                        <button
-                          onClick={() => handleRevoke(u.email)}
-                          disabled={isPending}
-                          className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50 font-medium"
-                        >
-                          Remove
-                        </button>
+                        <button onClick={() => handleRevoke(u.email)} disabled={isPending} className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50 font-medium">Remove</button>
                       </div>
                     </td>
                   </tr>
@@ -386,13 +326,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AllowedUserWithAct
                     {formatDistanceToNow(new Date(u.revoked_at!), { addSuffix: true })}
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <button
-                      onClick={() => handleRegrant(u.email)}
-                      disabled={isPending}
-                      className="text-xs text-blue-500 hover:text-blue-700 disabled:opacity-50 font-medium"
-                    >
-                      Re-invite
-                    </button>
+                    <button onClick={() => handleRegrant(u.email)} disabled={isPending} className="text-xs text-blue-500 hover:text-blue-700 disabled:opacity-50 font-medium">Re-invite</button>
                   </td>
                 </tr>
               ))}
@@ -408,21 +342,9 @@ function ExpiryBadge({ expiresAt }: { expiresAt: string | null }) {
   if (!expiresAt) return <span className="text-gray-300">No limit</span>;
   const ms = new Date(expiresAt).getTime() - Date.now();
   const days = Math.ceil(ms / 86_400_000);
-  if (days < 0) return (
-    <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 border border-red-200 text-xs font-medium px-2 py-0.5 rounded-full">
-      Expired
-    </span>
-  );
-  if (days <= 2) return (
-    <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-600 border border-orange-200 text-xs font-medium px-2 py-0.5 rounded-full">
-      {days}d left
-    </span>
-  );
-  if (days <= 7) return (
-    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium px-2 py-0.5 rounded-full">
-      {days}d left
-    </span>
-  );
+  if (days < 0) return <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 border border-red-200 text-xs font-medium px-2 py-0.5 rounded-full">Expired</span>;
+  if (days <= 2) return <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-600 border border-orange-200 text-xs font-medium px-2 py-0.5 rounded-full">{days}d left</span>;
+  if (days <= 7) return <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium px-2 py-0.5 rounded-full">{days}d left</span>;
   return <span className="text-gray-400">{days}d left</span>;
 }
 
@@ -436,4 +358,3 @@ function formatDuration(seconds: number | null | undefined): string {
   const rem = m % 60;
   return rem > 0 ? `${h}h ${rem}m` : `${h}h`;
 }
-
