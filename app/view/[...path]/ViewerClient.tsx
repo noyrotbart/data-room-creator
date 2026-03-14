@@ -9,32 +9,29 @@ interface Props {
   mimeType: string;
   fileUrl: string;
   relPath: string;
+  canDownload: boolean;
 }
 
-export function ViewerClient({ filename, mimeType, fileUrl, relPath }: Props) {
+export function ViewerClient({ filename, mimeType, fileUrl, relPath, canDownload }: Props) {
   const startRef = useRef<number>(Date.now());
 
   useEffect(() => {
     startRef.current = Date.now();
-
     function reportDuration() {
       const seconds = Math.round((Date.now() - startRef.current) / 1000);
       if (seconds < 2) return;
-      // sendBeacon fires even when the tab is being closed
       navigator.sendBeacon(
         "/api/views/duration",
-        new Blob([JSON.stringify({ filePath: relPath, durationSeconds: seconds })], {
-          type: "application/json",
-        })
+        new Blob([JSON.stringify({ filePath: relPath, durationSeconds: seconds })], { type: "application/json" })
       );
     }
-
     window.addEventListener("beforeunload", reportDuration);
     return () => {
       window.removeEventListener("beforeunload", reportDuration);
-      reportDuration(); // also fires on in-app navigation (React unmount)
+      reportDuration();
     };
   }, [relPath]);
+
   const isPdf = mimeType === "application/pdf";
   const isImage = mimeType.startsWith("image/");
   const isDocx =
@@ -66,17 +63,25 @@ export function ViewerClient({ filename, mimeType, fileUrl, relPath }: Props) {
             </span>
           ))}
         </nav>
+        {canDownload && (
+          <a
+            href={fileUrl}
+            download={filename}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download
+          </a>
+        )}
       </div>
 
       {/* Viewer */}
       <div className="flex-1 flex flex-col">
         {isPdf && (
-          <iframe
-            src={fileUrl}
-            className="flex-1 w-full"
-            style={{ minHeight: "calc(100vh - 112px)" }}
-            title={filename}
-          />
+          <iframe src={fileUrl} className="flex-1 w-full" style={{ minHeight: "calc(100vh - 112px)" }} title={filename} />
         )}
         {isImage && (
           <div className="flex-1 flex items-center justify-center p-8 bg-gray-800">
