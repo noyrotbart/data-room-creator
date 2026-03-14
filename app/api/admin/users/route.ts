@@ -5,6 +5,8 @@ import { sendInviteEmail } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || !isAdmin(session.user?.email)) {
@@ -29,8 +31,8 @@ export async function POST(request: NextRequest) {
   }
 
   const { email, name, durationDays, password } = body;
-  if (typeof email !== "string" || !email.includes("@")) {
-    return NextResponse.json({ error: "Valid email required" }, { status: 400 });
+  if (typeof email !== "string" || !EMAIL_REGEX.test(email)) {
+    return NextResponse.json({ error: "Valid email required (e.g., user@example.com)" }, { status: 400 });
   }
 
   if (password !== undefined && password !== null && password !== "") {
