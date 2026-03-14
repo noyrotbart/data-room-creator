@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
   const [orgName, setOrgName] = useState("");
@@ -38,7 +39,17 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
-      // Redirect to the new org's setup page
+      // Auto-sign in the new admin, then redirect to setup
+      const signInResult = await signIn("credentials", {
+        email: adminEmail.trim(),
+        password: adminPassword,
+        redirect: false,
+      });
+      if (signInResult?.error) {
+        setError("Account created but sign-in failed. Please sign in manually.");
+        setLoading(false);
+        return;
+      }
       window.location.href = data.orgUrl;
     } catch {
       setError("Network error");
