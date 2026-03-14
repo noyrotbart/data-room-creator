@@ -1,17 +1,21 @@
 import { getServerSession } from "next-auth";
-import { authOptions, isAdmin } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getAllowedUsersWithActivity } from "@/lib/db";
+import { getAllowedUsersWithActivity, isOrgAdmin } from "@/lib/db";
+import { getOrgFromHeaders } from "@/lib/org";
 import { Navbar } from "@/components/Navbar";
 import { AdminTabs } from "@/components/AdminTabs";
 import { UsersClient } from "./UsersClient";
 
 export default async function UsersPage() {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/");
-  if (!isAdmin(session.user?.email)) redirect("/browse");
+  if (!session?.user?.email) redirect("/");
+  const org = await getOrgFromHeaders();
+  if (!org) redirect("/");
+  const admin = await isOrgAdmin(session.user.email, org.id);
+  if (!admin) redirect("/browse");
 
-  const users = await getAllowedUsersWithActivity();
+  const users = await getAllowedUsersWithActivity(org.id);
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -1,11 +1,13 @@
 import { getServerSession } from "next-auth";
-import { authOptions, isAdmin } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import {
   getAllowedUserByEmail,
   getViewsForUser,
+  isOrgAdmin,
 } from "@/lib/db";
+import { getOrgFromHeaders } from "@/lib/org";
 import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
 
@@ -36,13 +38,16 @@ export default async function UserDetailPage({
   params: { email: string };
 }) {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/");
-  if (!isAdmin(session.user?.email)) redirect("/browse");
+  if (!session?.user?.email) redirect("/");
+  const org = await getOrgFromHeaders();
+  if (!org) redirect("/");
+  const admin = await isOrgAdmin(session.user.email, org.id);
+  if (!admin) redirect("/browse");
 
   const email = decodeURIComponent(params.email);
   const [user, activity] = await Promise.all([
-    getAllowedUserByEmail(email),
-    getViewsForUser(email),
+    getAllowedUserByEmail(email, org.id),
+    getViewsForUser(email, org.id),
   ]);
 
   const { byDocument, recent } = activity;
