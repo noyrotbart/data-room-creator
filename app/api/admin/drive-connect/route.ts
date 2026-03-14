@@ -1,11 +1,14 @@
 import { getServerSession } from "next-auth";
-import { authOptions, isAdmin } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
+import { isOrgAdmin } from "@/lib/db";
+import { getOrgFromHeaders } from "@/lib/org";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session || !isAdmin(session.user?.email)) {
-    return new Response("Forbidden", { status: 403 });
-  }
+  const org = await getOrgFromHeaders();
+  if (!session?.user?.email || !org) return new Response("Forbidden", { status: 403 });
+  const admin = await isOrgAdmin(session.user.email, org.id);
+  if (!admin) return new Response("Forbidden", { status: 403 });
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
@@ -14,9 +17,8 @@ export async function GET() {
     scope: "https://www.googleapis.com/auth/drive.readonly",
     access_type: "offline",
     prompt: "consent",
+    state: org.slug,
   });
 
-  return Response.redirect(
-    `https://accounts.google.com/o/oauth2/v2/auth?${params}`
-  );
+  return Response.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
 }

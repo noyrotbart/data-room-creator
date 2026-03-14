@@ -6,8 +6,8 @@ import { SessionProvider } from "@/components/SessionProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Churney",
-  description: "Secure document data room by Churney",
+  title: "Data Room",
+  description: "Secure document sharing platform",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

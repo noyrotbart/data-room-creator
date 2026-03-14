@@ -5,16 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { filePath?: unknown; durationSeconds?: unknown };
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
+  try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
 
   const { filePath, durationSeconds } = body;
   if (typeof filePath !== "string" || typeof durationSeconds !== "number") {
@@ -24,11 +18,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Duration out of range" }, { status: 400 });
   }
 
-  try {
-    await updateViewDuration(session.user.email, filePath, Math.round(durationSeconds));
-  } catch {
-    // Non-fatal — don't surface DB errors to the client
-  }
-
+  try { await updateViewDuration(session.user.email, filePath, Math.round(durationSeconds)); } catch {}
   return NextResponse.json({ ok: true });
 }

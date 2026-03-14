@@ -3,7 +3,7 @@ import type { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { isAllowedUser, getUserPasswordHash, getAllowedUserByEmail } from "@/lib/db";
+import { isAllowedUser, getUserPasswordHashAnyOrg, getAllowedUserByEmail, isOrgAdmin, getUserOrgs } from "@/lib/db";
 
 async function refreshGoogleToken(token: JWT): Promise<JWT> {
   try {
@@ -39,8 +39,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          // Only request basic profile — Drive access is granted separately
-          // via the admin /api/admin/drive-connect flow (admin only)
           scope: "openid email profile",
         },
       },
@@ -50,16 +48,29 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        orgId: { label: "Org ID", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         const email = credentials.email.toLowerCase().trim();
+        const orgId = credentials.orgId ? parseInt(credentials.orgId) : null;
+
         try {
-          const hash = await getUserPasswordHash(email);
-          if (!hash) return null;
-          const valid = await bcrypt.compare(credentials.password, hash);
+          if (orgId) {
+            // Org-scoped login
+            const { getUserPasswordHash } = await import("@/lib/db");
+            const hash = await getUserPasswordHash(email, orgId);
+            if (!hash) return null;
+            const valid = await bcrypt.compare(credentials.password, hash);
+            if (!valid) return null;
+            return { id: email, email, name: email, orgId: String(orgId) };
+          }
+          // Fallback: find user across any org
+          const result = await getUserPasswordHashAnyOrg(email);
+          if (!result?.password_hash) return null;
+          const valid = await bcrypt.compare(credentials.password, result.password_hash);
           if (!valid) return null;
-          return { id: email, email, name: email };
+          return { id: email, email, name: email, orgId: String(result.org_id) };
         } catch {
           return null;
         }
@@ -67,28 +78,36 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ account, user }) {
-      // Credentials provider: authorize() already validated password + allowed status
+    async signIn({ account, user, credentials }) {
       if (account?.provider === "credentials") return true;
       if (account?.provider !== "google") return false;
-      // Admin always allowed via Google
-      if (isAdmin(user.email)) return true;
-      // Everyone else must be explicitly granted access
+
+      const email = user.email ?? "";
       try {
-        const allowed = await getAllowedUserByEmail(user.email ?? "");
-        if (!allowed || allowed.revoked_at) return false;
-        if (allowed.expires_at && new Date(allowed.expires_at) < new Date()) return false;
-        // If this user has a password set, they are password-only — block Google sign-in
-        if (allowed.password_hash) return false;
-        return true;
+        // Find all orgs this user belongs to
+        const orgs = await getUserOrgs(email);
+        if (!orgs.length) return false;
+
+        // Check if any org has this user without a password (Google-allowed)
+        for (const org of orgs) {
+          const allowed = await getAllowedUserByEmail(email, org.org_id);
+          if (!allowed || allowed.revoked_at) continue;
+          if (allowed.expires_at && new Date(allowed.expires_at) < new Date()) continue;
+          if (allowed.password_hash) continue; // password-only user
+          return true;
+        }
+        return false;
       } catch {
-        return false; // fail closed if DB is unreachable
+        return false;
       }
     },
 
-    async jwt({ token, account }) {
-      // On initial sign-in, save Google tokens
+    async jwt({ token, account, user }) {
+      // On initial sign-in, save Google tokens and org info
       if (account?.provider === "google" && account.access_token) {
+        // Find user's org(s)
+        const orgs = await getUserOrgs(token.email ?? "");
+        const firstOrg = orgs[0];
         return {
           ...token,
           accessToken: account.access_token,
@@ -96,8 +115,25 @@ export const authOptions: NextAuthOptions = {
           accessTokenExpires: account.expires_at
             ? account.expires_at * 1000
             : Date.now() + 3600 * 1000,
+          orgId: firstOrg?.org_id,
+          orgSlug: firstOrg?.org_slug,
+          role: firstOrg?.role ?? "viewer",
         };
       }
+
+      // Credentials sign-in: orgId comes from the user object
+      if (account?.provider === "credentials" && (user as any)?.orgId) {
+        const orgId = parseInt((user as any).orgId);
+        const orgs = await getUserOrgs(token.email ?? "");
+        const org = orgs.find(o => o.org_id === orgId) ?? orgs[0];
+        return {
+          ...token,
+          orgId: org?.org_id,
+          orgSlug: org?.org_slug,
+          role: org?.role ?? "viewer",
+        };
+      }
+
       // Token still valid?
       const expires = (token.accessTokenExpires as number) ?? 0;
       if (expires && Date.now() < expires) {
@@ -114,9 +150,11 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token.sub) {
         (session.user as any).id = token.sub;
       }
-      // Expose access token server-side (via getServerSession) for Drive API calls
       (session as any).accessToken = token.accessToken;
       (session as any).accessTokenError = token.error;
+      (session as any).orgId = token.orgId;
+      (session as any).orgSlug = token.orgSlug;
+      (session as any).role = token.role;
       return session;
     },
   },
@@ -128,6 +166,16 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+/**
+ * Check if a user is an admin for a specific org.
+ * Falls back to checking the session role if orgId matches.
+ */
+export async function checkIsOrgAdmin(email: string | null | undefined, orgId: number): Promise<boolean> {
+  if (!email) return false;
+  return isOrgAdmin(email, orgId);
+}
+
+/** @deprecated Use checkIsOrgAdmin instead. Kept for migration compatibility. */
 export function isAdmin(email: string | null | undefined): boolean {
   return email === process.env.ADMIN_EMAIL;
 }

@@ -1,18 +1,20 @@
 import { Resend } from "resend";
 
-const FROM = process.env.EMAIL_FROM ?? "Data Room <onboarding@resend.dev>";
-
 export async function sendInviteEmail(params: {
   toEmail: string;
   toName?: string;
   invitedBy: string;
   hasPassword?: boolean;
+  orgName?: string;
+  appUrl?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   if (!process.env.RESEND_API_KEY) {
     return { ok: false, error: "RESEND_API_KEY not configured" };
   }
 
-  const appUrl = process.env.NEXTAUTH_URL ?? "https://dataroom.pltv.io";
+  const from = process.env.EMAIL_FROM ?? "Data Room <onboarding@resend.dev>";
+  const appUrl = params.appUrl ?? process.env.NEXTAUTH_URL ?? "https://dataroom.pltv.io";
+  const orgName = params.orgName ?? "Data Room";
   const resend = new Resend(process.env.RESEND_API_KEY);
   const greeting = params.toName ? `Hi ${params.toName.split(" ")[0]},` : "Hi,";
 
@@ -25,17 +27,17 @@ export async function sendInviteEmail(params: {
     : `Access is restricted to your Google account (${params.toEmail}).`;
 
   const { error } = await resend.emails.send({
-    from: FROM,
+    from,
     to: params.toEmail,
-    subject: "You've been invited to the Churney Data Room",
+    subject: `You've been invited to the ${orgName} Data Room`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#111;">
         <div style="margin-bottom:24px;">
-          <h1 style="font-size:22px;font-weight:700;margin:0 0 8px;">Churney Data Room</h1>
+          <h1 style="font-size:22px;font-weight:700;margin:0 0 8px;">${orgName} Data Room</h1>
         </div>
         <p style="margin:0 0 16px;line-height:1.6;">${greeting}</p>
         <p style="margin:0 0 24px;line-height:1.6;">
-          You've been invited to access the Churney Data Room by <strong>${params.invitedBy}</strong>.
+          You've been invited to access the ${orgName} Data Room by <strong>${params.invitedBy}</strong>.
           ${loginInstructions}
         </p>
         <a href="${appUrl}"

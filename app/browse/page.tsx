@@ -1,29 +1,60 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getDocumentTree } from "@/lib/documents";
-import { DocTree } from "@/components/DocTree";
 import { Navbar } from "@/components/Navbar";
+import { DocTree } from "@/components/DocTree";
+import { getOrgFromHeaders } from "@/lib/org";
+import { getAdminDriveAccessToken, listFolder, MIME_FOLDER } from "@/lib/drive";
+
+interface DocNode {
+  name: string;
+  path: string;
+  type: "file" | "folder";
+  children?: DocNode[];
+}
+
+async function buildDriveTree(folderId: string, folderPath: string, accessToken: string): Promise<DocNode[]> {
+  const items = await listFolder(folderId, accessToken);
+  const nodes: DocNode[] = [];
+  for (const item of items) {
+    const itemPath = folderPath ? `${folderPath}/${item.name}` : item.name;
+    if (item.mimeType === MIME_FOLDER) {
+      const children = await buildDriveTree(item.id, itemPath, accessToken);
+      nodes.push({ name: item.name, path: itemPath, type: "folder", children });
+    } else {
+      nodes.push({ name: item.name, path: itemPath, type: "file" });
+    }
+  }
+  nodes.sort((a, b) => { if (a.type !== b.type) return a.type === "folder" ? -1 : 1; return a.name.localeCompare(b.name); });
+  return nodes;
+}
 
 export default async function BrowsePage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
 
-  const tree = getDocumentTree();
+  const org = await getOrgFromHeaders();
+  let tree: DocNode[] = [];
+
+  if (org?.drive_folder_id) {
+    try {
+      const accessToken = await getAdminDriveAccessToken(org.id);
+      if (accessToken) {
+        tree = await buildDriveTree(org.drive_folder_id, "", accessToken);
+      }
+    } catch {}
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
         <aside className="w-72 bg-white border-r border-gray-200 overflow-y-auto p-4 hidden md:block">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
-            Documents
-          </p>
-          <DocTree nodes={tree} />
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Documents</p>
+          {tree.length > 0 ? <DocTree nodes={tree} /> : (
+            <p className="text-sm text-gray-400 px-3">No documents yet. {org ? "Connect Google Drive in Settings." : ""}</p>
+          )}
         </aside>
-
-        {/* Main */}
         <main className="flex-1 p-8">
           <div className="max-w-2xl mx-auto text-center pt-16">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -33,13 +64,9 @@ export default async function BrowsePage() {
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Select a document</h2>
-            <p className="text-gray-500 text-sm">
-              Browse the folder tree on the left and click a file to view it.
-            </p>
-
-            {/* Mobile: flat list */}
+            <p className="text-gray-500 text-sm">Browse the folder tree on the left and click a file to view it.</p>
             <div className="mt-8 md:hidden">
-              <DocTree nodes={tree} />
+              {tree.length > 0 && <DocTree nodes={tree} />}
             </div>
           </div>
         </main>
