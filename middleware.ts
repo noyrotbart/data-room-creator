@@ -12,11 +12,16 @@ export function middleware(request: NextRequest) {
   const hostname = host.split(":")[0];
   const response = NextResponse.next();
 
+  const pathname = request.nextUrl.pathname;
+
   // Dev mode: use ?org=slug query param
   if (hostname === "localhost" || hostname === "127.0.0.1") {
     const orgParam = request.nextUrl.searchParams.get("org");
     if (orgParam) {
       response.headers.set("x-org-slug", orgParam);
+    } else if (pathname === "/") {
+      // No org context on localhost root → show landing
+      return NextResponse.redirect(new URL("/landing", request.url));
     }
     return response;
   }
@@ -24,8 +29,13 @@ export function middleware(request: NextRequest) {
   const platformDomain = process.env.PLATFORM_DOMAIN;
   if (!platformDomain) return response;
 
-  // Root domain — no org context (landing page)
-  if (hostname === platformDomain || hostname === `www.${platformDomain}` || hostname === `app.${platformDomain}`) {
+  // Root domain — no org context
+  const isRootDomain = hostname === platformDomain || hostname === `www.${platformDomain}` || hostname === `app.${platformDomain}`;
+  if (isRootDomain) {
+    // Redirect root path to landing page (but allow /landing, /signup, /api, etc.)
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/landing", request.url));
+    }
     return response;
   }
 
@@ -34,7 +44,13 @@ export function middleware(request: NextRequest) {
     const slug = hostname.slice(0, -(platformDomain.length + 1));
     if (slug && slug !== "app" && slug !== "www") {
       response.headers.set("x-org-slug", slug);
+      return response;
     }
+  }
+
+  // No org context (e.g. Vercel preview domain) — redirect root to landing
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/landing", request.url));
   }
 
   return response;
