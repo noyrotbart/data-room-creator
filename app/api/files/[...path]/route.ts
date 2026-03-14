@@ -56,13 +56,33 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     }
   }
 
-  // Try to serve from Google Drive
+  // Try to serve from Google Drive via export
   if (org?.drive_folder_id) {
     const accessToken = await getAdminDriveAccessToken(org.id);
     if (accessToken) {
-      // Search for the file in Drive by name
-      const { default: fetch } = await import("node-fetch") as any;
-      // For now, return 404 - Drive file serving needs file ID mapping
+      // Search for file in Drive by path/name
+      const searchName = filename.replace(/'/g, "\\'");
+      const searchRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=name='${searchName}' and trashed=false&fields=files(id,name,mimeType)&pageSize=1`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if (searchRes.ok) {
+        const searchData = await searchRes.json();
+        const file = searchData.files?.[0];
+        if (file) {
+          // Download file content
+          const dlRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          if (dlRes.ok) {
+            const body = await dlRes.arrayBuffer();
+            return new NextResponse(body, {
+              headers: { "Content-Type": mimeType, "Content-Disposition": `inline; filename="${filename}"`, "Content-Length": body.byteLength.toString() },
+            });
+          }
+        }
+      }
     }
   }
 
