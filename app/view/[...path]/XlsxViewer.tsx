@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 interface Sheet {
   name: string;
-  html: string;
+  rows: string[][];
+  colWidths: number[];
 }
 
 export function XlsxViewer({ fileUrl }: { fileUrl: string }) {
@@ -16,35 +17,37 @@ export function XlsxViewer({ fileUrl }: { fileUrl: string }) {
     let cancelled = false;
     async function load() {
       try {
-        const [XLSX, res] = await Promise.all([
-          import("xlsx"),
-          fetch(fileUrl),
-        ]);
+        const [XLSX, res] = await Promise.all([import("xlsx"), fetch(fileUrl)]);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const buf = await res.arrayBuffer();
         if (cancelled) return;
-        const wb = XLSX.read(buf, { type: "array" });
-        const result: Sheet[] = wb.SheetNames.map((name) => ({
-          name,
-          html: XLSX.utils.sheet_to_html(wb.Sheets[name], { header: "", footer: "" }),
-        }));
-        if (!cancelled) {
-          setSheets(result);
-          setStatus("done");
-        }
+        const wb = XLSX.read(buf, { type: "array", cellDates: true });
+        const result: Sheet[] = wb.SheetNames.map((name) => {
+          const ws = wb.Sheets[name];
+          const rows = XLSX.utils.sheet_to_json<string[]>(ws, {
+            header: 1,
+            raw: false,
+            defval: "",
+          }) as string[][];
+          const cols: any[] = (ws["!cols"] as any[]) ?? [];
+          const colWidths = cols.map((c) =>
+            c?.wpx ? Math.max(c.wpx, 60) : c?.wch ? Math.max(Math.round(c.wch * 7), 60) : 90
+          );
+          return { name, rows, colWidths };
+        });
+        if (!cancelled) { setSheets(result); setStatus("done"); }
       } catch (e: any) {
-        if (!cancelled) {
-          setErrorMsg(e?.message ?? "Unknown error");
-          setStatus("error");
-        }
+        if (!cancelled) { setErrorMsg(e?.message ?? "Unknown error"); setStatus("error"); }
       }
     }
     load();
     return () => { cancelled = true; };
   }, [fileUrl]);
 
+  const sheet = sheets[active];
+
   return (
-    <div className="flex-1 flex flex-col bg-gray-50" style={{ minHeight: "calc(100vh - 112px)" }}>
+    <div className="flex-1 flex flex-col bg-gray-100" style={{ minHeight: "calc(100vh - 112px)" }}>
       {status === "loading" && (
         <div className="flex items-center justify-center h-48 gap-3 text-gray-400">
           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500" />
@@ -56,11 +59,10 @@ export function XlsxViewer({ fileUrl }: { fileUrl: string }) {
           Could not render spreadsheet: {errorMsg}
         </div>
       )}
-      {status === "done" && sheets.length > 0 && (
+      {status === "done" && sheet && (
         <>
-          {/* Sheet tabs */}
           {sheets.length > 1 && (
-            <div className="flex gap-1 px-4 pt-3 bg-white border-b border-gray-200 overflow-x-auto">
+            <div className="flex gap-1 px-4 pt-3 bg-white border-b border-gray-200 overflow-x-auto flex-shrink-0">
               {sheets.map((s, i) => (
                 <button
                   key={s.name}
@@ -76,35 +78,59 @@ export function XlsxViewer({ fileUrl }: { fileUrl: string }) {
               ))}
             </div>
           )}
-          {/* Sheet content */}
-          <div className="flex-1 overflow-auto p-4">
-            <div
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto"
-              dangerouslySetInnerHTML={{ __html: sheets[active].html }}
-            />
+          <div className="flex-1 overflow-auto">
+            <table style={{
+              borderCollapse: "collapse",
+              fontSize: "13px",
+              fontFamily: "system-ui, -apple-system, sans-serif",
+              whiteSpace: "nowrap",
+              width: "max-content",
+              minWidth: "100%",
+            }}>
+              {sheet.rows[0] && (
+                <thead>
+                  <tr>
+                    {sheet.rows[0].map((cell, j) => (
+                      <th key={j} style={{
+                        border: "1px solid #d1d5db",
+                        padding: "7px 12px",
+                        background: "#f3f4f6",
+                        fontWeight: 600,
+                        textAlign: "left",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 1,
+                        minWidth: `${sheet.colWidths[j] ?? 90}px`,
+                        color: "#111827",
+                        boxShadow: "0 1px 0 #d1d5db",
+                      }}>
+                        {cell}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {sheet.rows.slice(1).map((row, i) => (
+                  <tr key={i}>
+                    {row.map((cell, j) => (
+                      <td key={j} style={{
+                        border: "1px solid #e5e7eb",
+                        padding: "5px 12px",
+                        background: i % 2 === 0 ? "#ffffff" : "#f9fafb",
+                        minWidth: `${sheet.colWidths[j] ?? 90}px`,
+                        color: "#374151",
+                      }}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </>
       )}
-      <style>{`
-        .xlsx-table, [class^="xlsx-"] table {
-          border-collapse: collapse;
-          font-size: 13px;
-          font-family: system-ui, sans-serif;
-          white-space: nowrap;
-        }
-        [class^="xlsx-"] td, [class^="xlsx-"] th,
-        div[dangerouslysetinnerhtml] table td,
-        div[dangerouslysetinnerhtml] table th {
-          border: 1px solid #e5e7eb;
-          padding: 4px 10px;
-          vertical-align: middle;
-        }
-        div[dangerouslysetinnerhtml] table tr:first-child td,
-        div[dangerouslysetinnerhtml] table tr:first-child th {
-          background: #f9fafb;
-          font-weight: 600;
-        }
-      `}</style>
     </div>
   );
 }
