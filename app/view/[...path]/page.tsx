@@ -1,8 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions, isAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { resolveDocPath, getMimeType, DOCUMENTS_ROOT } from "@/lib/documents";
 import { Navbar } from "@/components/Navbar";
+import { getAllowedUserByEmail } from "@/lib/db";
 import path from "path";
 import fs from "fs";
 import { ViewerClient } from "./ViewerClient";
@@ -17,9 +18,6 @@ export default async function ViewPage({ params }: Props) {
 
   const relPath = params.path.map(decodeURIComponent).join("/");
 
-  // In local dev, validate the file exists on the filesystem.
-  // In production (Vercel Blob), DOCUMENTS_ROOT doesn't exist so we skip the check
-  // and let the /api/files route handle the actual lookup.
   if (fs.existsSync(DOCUMENTS_ROOT)) {
     let absPath: string;
     try {
@@ -36,6 +34,11 @@ export default async function ViewPage({ params }: Props) {
   const mimeType = getMimeType(relPath);
   const fileUrl = `/api/files/${params.path.map(encodeURIComponent).join("/")}`;
 
+  // Admins can always download; regular users need the flag
+  const canDownload = isAdmin(session.user?.email)
+    ? true
+    : ((await getAllowedUserByEmail(session.user?.email ?? ""))?.can_download ?? false);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -44,6 +47,7 @@ export default async function ViewPage({ params }: Props) {
         mimeType={mimeType}
         fileUrl={fileUrl}
         relPath={relPath}
+        canDownload={canDownload}
       />
     </div>
   );
