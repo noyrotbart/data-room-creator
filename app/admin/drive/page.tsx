@@ -5,7 +5,7 @@ import { isOrgAdmin, getAdminToken } from "@/lib/db";
 import { getOrgFromHeaders } from "@/lib/org";
 import { Navbar } from "@/components/Navbar";
 import { AdminTabs } from "@/components/AdminTabs";
-import DriveClient from "./DriveClient";
+import { DriveClient } from "./DriveClient";
 
 export default async function DrivePage() {
   const session = await getServerSession(authOptions);
@@ -22,7 +22,7 @@ export default async function DrivePage() {
       <Navbar />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <AdminTabs active="drive" />
-        <DriveClient folderId={org.drive_folder_id ?? ""} hasToken={hasToken} />
+        <DriveClient folderId={org.drive_folder_id ?? ""} hasAccessToken={hasToken} />
       </main>
     </div>
   );
