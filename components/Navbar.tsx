@@ -14,9 +14,6 @@ export async function Navbar() {
           src="https://cdn.prod.website-files.com/67a1af244a7d949c40e22a28/67a1cb65b38d5e2aa20b616e_Logo.svg"
           alt="Churney"
           className="h-8"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
         />
         <Link href="/browse" className="font-semibold text-gray-900">Churney</Link>
       </div>
